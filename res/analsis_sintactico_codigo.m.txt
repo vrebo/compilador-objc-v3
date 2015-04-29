@@ -1,0 +1,71 @@
+Error de sintaxis en directiva de importación Linea: 1 Columna: 9
+Error de sintaxis en directiva de importación Linea: 2 Columna: 10
+Error de sintaxis en declaración de variable global Linea: 8 Columna: 13
+Error de sintaxis en declaración de variable global Linea: 10 Columna: 14
+Error de sintaxis en declaración de método Linea: 12 Columna: 21
+Error de sintaxis en declaración de método Linea: 16 Columna: 14
+Error de sintaxis en declaración de método Linea: 18 Columna: 14
+Error de sintaxis en declaración de método Linea: 20 Columna: 21
+Error de sintaxis en declaración de método Linea: 20 Columna: 33
+Error de sintaxis en sentencia if
+			 if ( EXPRESION 
+Linea: 54 Columna: 9
+Error de sintaxis en sentencia if
+			 if ( ) 
+Linea: 54 Columna: 9
+Error de sintaxis en sentencia if
+			 if EXPRESION ) 
+Linea: 54 Columna: 9
+Error de sintaxis en sentencia while
+			 while  
+Linea: 56 Columna: 9
+Error de sintaxis en sentencia while
+			 while ( ) 
+Linea: 58 Columna: 15
+Error de sintaxis en sentencia while
+			 while ) 
+Linea: 60 Columna: 14
+Error de sintaxis en sentencia while
+			 while ( 
+Linea: 62 Columna: 14
+Error de sintaxis en sentencia while
+			 while EXPRESION ) 
+Linea: 64 Columna: 20
+Error de sintaxis en sentencia while
+			 while ( EXPRESION 
+Linea: 66 Columna: 20
+Error de sintaxis en sentencia switch Linea: 92 Columna: 29
+Error de sintaxis en etiqueta de switch Linea: 100 Columna: 13
+Error de sintaxis en etiqueta de switch Linea: 106 Columna: 18
+Error de sintaxis en etiqueta de switch Linea: 119 Columna: 17
+Error de sintaxis en sentencia do - while
+			 while ( ) 
+Linea: 135 Columna: 17
+Error de sintaxis en sentencia do - while
+			 while ( EXPRESION 
+Linea: 139 Columna: 21
+Error de sintaxis en sentencia do - while
+			 while EXPRESION ) 
+Linea: 143 Columna: 22
+Error de sintaxis en sentencia do - while
+			 while ) 
+Linea: 147 Columna: 17
+Error de sintaxis en sentencia do - while
+			 while ( 
+Linea: 151 Columna: 17
+Error de sintaxis en sentencia do - while
+			 while  
+Linea: 155 Columna: 16
+Error de sintaxis en sentencia for
+			 EXPRESION _ EXPRESION ; EXPRESION 
+Linea: 162 Columna: 31
+Error de sintaxis en sentencia for
+			 EXPRESION ; EXPRESION _ EXPRESION 
+Linea: 166 Columna: 32
+Error de sintaxis en sentencia for
+			 EXPRESION _ EXPRESION _ EXPRESION 
+Linea: 170 Columna: 31
+Error de sintaxis en sentencia for
+			 for (  
+Linea: 176 Columna: 9
+

@@ -1,0 +1,15 @@
+Ejemplo de análisis semántico
+
+http://cs.lmu.edu/~ray/notes/javacc/
+
+The JavaCC FAQ
+
+http://www.engr.mun.ca/~theo/JavaCC-FAQ/javacc-faq-moz.htm#tth_sEc4.7
+
+Gramáticas para expresiones Aritméticas
+
+http://www.cs.us.es/~jalonso/cursos/pd-09/temas/tema-11-1x2.pdf
+
+Código intermedio
+
+http://www.cvc.uab.es/shared/teach/a25002/Codigo%20intermedio.pdf

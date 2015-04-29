@@ -1,0 +1,1011 @@
+options{
+    STATIC = false;
+}
+
+PARSER_BEGIN(Compilador)
+    package compilador;
+
+    import java.io.FileNotFoundException;
+    import java.io.FileReader;
+    import java.io.PrintWriter;
+    import java.io.File;
+    
+    public class Compilador {
+
+        private static final StringBuilder logAnalisisLexico;
+        private static final StringBuilder logAnalisisSintactico;
+        private static final StringBuilder logAnalisisSemantico;
+
+        public static int contadorErrores;       
+
+        static {
+            logAnalisisLexico = new StringBuilder();
+            logAnalisisSintactico = new StringBuilder();
+            logAnalisisSemantico = new StringBuilder();
+            contadorErrores = 0;
+        }    
+
+        public static void main (String args [] ) throws FileNotFoundException {
+                Compilador compilador = new Compilador(new File("res/Codigo02.mm"));
+                try{
+                    compilador.unidadCompilacion();
+                }catch(ParseException ex){
+                    System.out.println(ex.getMessage());
+                }
+        }
+
+        private File codigo;
+
+        public Compilador(File codigo) throws FileNotFoundException{
+            this(new FileReader(codigo));
+            this.codigo = codigo;
+        }
+
+        public void imprimeLogs(){
+            imprimeAnalisisLexico();
+            imprimeAnalisisSintactico();
+            imprimeAnalisisSemantico();
+        }
+
+        private void imprimeAnalisisLexico() {
+            imprimeArchivo
+                ("res/analsis_lexico_" + codigo.getName() + ".txt",
+                Compilador.getLogAnalisisLexico().toString());
+        }
+
+        private void imprimeAnalisisSintactico() {
+            imprimeArchivo
+                ("res/analsis_sintactico_" + codigo.getName() + ".txt",
+                Compilador.getLogAnalisisSintactico().toString());
+        }
+
+        private void imprimeAnalisisSemantico() {
+            imprimeArchivo
+                ("res/analsis_semantico_" + codigo.getName() + ".txt",
+                Compilador.getLogAnalisisSemantico().toString());
+        }
+        
+        private void imprimeArchivo(String nombreArchivo, String contenido) {
+            PrintWriter pw;
+            try {
+                pw = new PrintWriter(nombreArchivo);
+                pw.println(contenido);
+                pw.flush();
+            } catch (FileNotFoundException ex) {                
+                System.err.println("No se pudo encontrar el archivo");
+            }
+        }
+
+        public static void registraLogLexico(String mensaje){            
+            logAnalisisLexico.append(mensaje).append("\n");
+        }
+
+        public static void registraLogSintactico(String mensaje){
+            logAnalisisSintactico.append(mensaje).append("\n");
+        }
+
+        public static void registraLogSemantico(String mensaje){
+            contadorErrores++;
+            logAnalisisSemantico.append(mensaje).append("\n");
+        }
+
+        public static void registraErrorSintactico(String mensaje, Token token){
+            contadorErrores++;
+            StringBuilder sb = new StringBuilder()
+                .append(mensaje)
+                .append("Linea: ").append(token.beginLine)
+                .append(" Columna: ").append(token.beginColumn);
+                registraLogSintactico(sb.toString());
+        }
+        
+        void skipTo(int kind) {
+            Token tok = getToken(0);
+            while(tok.kind != EOF && tok.kind != kind){
+                 tok = getNextToken();
+                 System.out.println("Saltanto token: " + tok.image);
+            }
+        }
+
+        void skipTo(String st) {
+            Token tok = getToken(0);
+            System.out.println("Token saltado " + tok.image);
+            while(tok.kind != EOF && !tok.image.equals(st)) tok = getNextToken();
+        }
+
+        void skipTo(int[] left, int[] right) {
+            Token prev = getToken(0);
+            Token next = getToken(1);
+            boolean flag = false;
+            if(prev.kind == EOF || next.kind == EOF) flag = true;
+            for(int i=0; i<left.length; i++) if(prev.kind == left[i]) flag = true;
+            for(int i=0; i<right.length; i++) if(next.kind == right[i]) flag = true;
+
+            while(!flag) {
+            System.err.println("Token saltado: " + prev);
+                getNextToken();
+                prev = getToken(0);
+                next = getToken(1);
+                if(prev.kind == EOF || next.kind == EOF) flag = true;
+                for(int i=0; i<left.length; i++) if(prev.kind == left[i]) flag = true;
+                for(int i=0; i<right.length; i++) if(next.kind == right[i]) flag = true;
+            }
+        }
+
+        public static StringBuilder getLogAnalisisLexico(){
+            return logAnalisisLexico;
+        }
+
+        public static StringBuilder getLogAnalisisSintactico(){
+            return logAnalisisSintactico;
+        }
+
+        public static StringBuilder getLogAnalisisSemantico(){
+            return logAnalisisSemantico;
+        }
+
+        public static void initLogs(){
+            logAnalisisLexico.setLength(0);
+            logAnalisisSintactico.setLength(0);
+            logAnalisisSemantico.setLength(0);
+        }
+}
+PARSER_END(Compilador)
+
+//ÁREA DE TOKENS
+
+//Tokens de operadores aritméticos
+TOKEN:{
+    <OP_INCREMENTO:"++">{
+        Compilador.registraLogLexico("Token: Operador de incremento " + image);
+    }
+    |<OP_DECREMENTO: "--">{
+        Compilador.registraLogLexico("Token: Operador de decremento " + image);
+    }
+    |<OP_SUMA : "+">{
+        Compilador.registraLogLexico("Token: Operador de adición " + image);
+    }
+    |<OP_RESTA : "-">{
+        Compilador.registraLogLexico("Token: Operador de sustracción " + image);
+    }
+    |<OP_PRODUCTO : "*">{
+        Compilador.registraLogLexico("Token: Operador de producto " + image);
+    }
+    |<OP_DIVISION : "/">{
+        Compilador.registraLogLexico("Token: Operador de cociente " + image);
+    }
+    |<COMPLEMENTO: "~" >{
+        Compilador.registraLogLexico("Token: Operador de complemento a 2 " + image);
+    }
+}
+
+//Tokens de operadores lógicos y de bits
+TOKEN : {
+    <OP_AND : "&&">{
+        Compilador.registraLogLexico("Token: Operador AND lógico " + image);
+    }
+    |<OP_OR : "||">{
+        Compilador.registraLogLexico("Token: Operador OR lógico " + image);
+    }
+    |<OP_NOT : "!">{
+        Compilador.registraLogLexico("Token: Operador NOT lógico " + image);
+    }
+    |<OP_OR_BIT : "|">{
+        Compilador.registraLogLexico("Token: Operador OR a nivel de bits " + image);
+    }
+    |<OP_AND_BIT : "&">{
+        Compilador.registraLogLexico("Token: Operador AND a nivel de bits " + image);
+    }
+    |<OP_XOR_BIT : "^">{
+        Compilador.registraLogLexico("Token: Operador XOR a nivel de bits " + image);
+    }
+}
+
+TOKEN : {
+    <OP_ASIG : "=">{
+        Compilador.registraLogLexico("Token: Operador de asignación " + image);
+    }
+    |<OP_ASIG_SUMA : "+=">{
+        Compilador.registraLogLexico("Token: Operador de asignacion con adición " + image);
+    }
+    |<OP_ASIG_RESTA : "-=">{
+        Compilador.registraLogLexico("Token: Operador de asignacion con sustracción " + image);
+    }
+    |<OP_ASIG_PRODUCTO : "*=">{
+        Compilador.registraLogLexico("Token: Operador de asignacion con producto " + image);
+    }
+    |<OP_ASIG_COCIENTE : "/=">{
+        Compilador.registraLogLexico("Token: Operador de asignacion con cociente " + image);
+    }
+    |<OP_ASIG_MODULO : "%=">{
+        Compilador.registraLogLexico("Token: Operador de asignacion con modulo " + image);
+    }
+    |<OP_ASIG_SHIFT_LEFT : "<<=">{
+        Compilador.registraLogLexico("Token: Operador de asignacion con recorrimiento a la izquierda " + image);
+    }
+    |<OP_ASIG_SHIFT_RIGTH : ">>=">{
+        Compilador.registraLogLexico("Token: Operador de asignacion con recorrimiento a la derecha " + image);
+    }
+    |<OP_ASIG_XOR : "^=">{
+        Compilador.registraLogLexico("Token: Operador de asignacion con operación XOR a nivel de bits " + image);
+    }
+    |<OP_ASIG_OR : "|=">{
+        Compilador.registraLogLexico("Token: Operador de asignacion con operación OR a nivel de bits " + image);
+    }
+    |<OP_ASIG_AND : "&=">{
+        Compilador.registraLogLexico("Token: Operador de asignacion con operación AND a nivel de bits " + image);
+    }
+}
+
+//Tokens para literales
+TOKEN : {
+    <LITERAL_BOOLEANA : ("YES"|"NO"|"true"|"false")>{
+        Compilador.registraLogLexico("Token: Literal booleana: " + image);
+    }
+    |< LITERAL_ENTERA:
+        <LITERAL_DECIMAL> (["l","L"])?
+      | <LITERAL_HEX> (["l","L"])?
+      | <LITERAL_OCTAL> (["l","L"])?>{
+        Compilador.registraLogLexico("Token: Literal entera: " + image);
+    }
+    |
+        < #LITERAL_DECIMAL: ["1"-"9"] (["0"-"9"])* >
+    |
+        < #LITERAL_HEX: "0" ["x","X"] (["0"-"9","a"-"f","A"-"F"])+ >
+    |
+        < #LITERAL_OCTAL: "0" (["0"-"7"])* >
+    |
+        < LITERAL_FLOTANTE:
+            (["0"-"9"])+ "." (["0"-"9"])* (<EXPONENTE>)? (["f","F","d","D"])?
+        | "." (["0"-"9"])+ (<EXPONENTE>)? (["f","F","d","D"])?
+        | (["0"-"9"])+ <EXPONENTE> (["f","F","d","D"])?
+        | (["0"-"9"])+ (<EXPONENTE>)? ["f","F","d","D"]
+        >{
+        Compilador.registraLogLexico("Token: Literal flotante : " + image);
+    }
+    |
+        < #EXPONENTE: ["e","E"] (["+","-"])? (["0"-"9"])+ >
+    |
+    < LITERAL_CARACTER:
+      "'"
+      (   (~["'","\\","\n","\r"])
+        | ("\\"
+            ( ["n","t","b","r","f","\\","'","\""]
+            | ["0"-"7"] ( ["0"-"7"] )?
+            | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+            )
+          )
+      )
+      "'"
+      >{
+        Compilador.registraLogLexico("Token: Literal caracter: " + image);
+    }
+    |
+    < LITERAL_STRING:
+      "\""
+      (   (~["\"","\\","\n","\r"])
+        | ("\\"
+            ( ["n","t","b","r","f","\\","'","\""]
+            | ["0"-"7"] ( ["0"-"7"] )?
+            | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+            )
+          )
+      )*
+      "\""
+    >{
+        Compilador.registraLogLexico("Token: Literal string: " + image);
+    }
+    |<LITERAL_STRING_OBJC:
+        "@"<LITERAL_STRING>
+    >{
+        Compilador.registraLogLexico("Token: Literal string de objective c: " + image);
+    }
+}
+
+//tokens para tipos de datos
+TOKEN : {
+    <BYTE : "byte">{
+        Compilador.registraLogLexico("Token: Palabra reservada de tipo de dato primitivo " + image);
+    }
+    |<SHORT : "short">{
+        Compilador.registraLogLexico("Token: Palabra reservada de tipo de dato primitivo " + image);
+    }
+    |<ENTERO : "int">{
+        Compilador.registraLogLexico("Token: Palabra reservada de tipo de dato primitivo " + image);
+    }
+    |<LONG : "long">{
+        Compilador.registraLogLexico("Token: Palabra reservada de tipo de dato primitivo " + image);
+    }
+    |<DOUBLE : "double">{
+        Compilador.registraLogLexico("Token: Palabra reservada de tipo de dato primitivo " + image);
+    }
+    |<FLOTANTE: "float">{
+        Compilador.registraLogLexico("Token: Palabra reservada de tipo de dato primitivo " + image);
+    }
+    |<BOOLEANO : "BOOL">{
+        Compilador.registraLogLexico("Token: Palabra reservada de tipo de dato primitivo " + image);
+    }
+    |<CARACTER : "char">{
+        Compilador.registraLogLexico("Token: Palabra reservada de tipo de dato primitivo " + image);
+    }
+    |<NSSTRING: "NSString">{
+        Compilador.registraLogLexico("Token: Palabra reservada de tipo de dato primitivo " + image);
+    }
+    |<ARREGLO: "NSArray">{
+        Compilador.registraLogLexico("Token: Palabra reservada de tipo de dato primitivo " + image);
+    }
+}
+
+//tokens para palabras reservadas (sentencias de control)
+TOKEN : {
+    <VOID : "void">{
+        Compilador.registraLogLexico("Token: Palabra reservada " + image);
+    }
+    |<CONST : "const">{
+        Compilador.registraLogLexico("Token: Palabra reservada " + image);
+    }
+    |<FOR : "for">{
+        Compilador.registraLogLexico("Token: Palabra reservada " + image);
+    }
+    |<WHILE : "while">{
+        Compilador.registraLogLexico("Token: Palabra reservada " + image);
+    }
+    |<DO : "do">{
+        Compilador.registraLogLexico("Token: Palabra reservada " + image);
+    }
+    |<BREAK : "break">{
+        Compilador.registraLogLexico("Token: Palabra reservada " + image);
+    }
+    |<CONTINUE : "continue">{
+        Compilador.registraLogLexico("Token: Palabra reservada " + image);
+    }
+    |<RETURN : "return">{
+        Compilador.registraLogLexico("Token: Palabra reservada " + image);
+    }
+    |<IF : "if">{
+        Compilador.registraLogLexico("Token: Palabra reservada " + image);
+    }
+    |<ELSE : "else">{
+        Compilador.registraLogLexico("Token: Palabra reservada " + image);
+    }
+    |<SWITCH : "switch">{
+        Compilador.registraLogLexico("Token: Palabra reservada " + image);
+    }
+    |<CASE : "case">{
+        Compilador.registraLogLexico("Token: Palabra reservada " + image);
+    }
+    |<PR_DEFAULT : "default">{
+        Compilador.registraLogLexico("Token: Palabra reservada " + image);
+    }
+}
+
+//tokens varios
+TOKEN : {
+    <IMPORTACION: "#import">{
+        Compilador.registraLogLexico("Token: Directiva de importación " + image);
+    }
+    |<DELIMITADOR_INSTRUCCION : ";">{
+        Compilador.registraLogLexico("Token: Delimitador de instrucción " + image);
+    }
+    |<DOS_PUNTOS : ":">{
+        Compilador.registraLogLexico("Token: Dos puntos " + image);
+    }
+    |<COMA : ",">{
+        Compilador.registraLogLexico("Token: Coma " + image);
+    }
+    |<PARENTESIS_APERTURA : "(">{
+        Compilador.registraLogLexico("Token: Parentesís de apertura " + image);
+    }
+    |<PARENTESIS_CERRADURA : ")">{
+        Compilador.registraLogLexico("Token: Parentesís de cerradura " + image);
+    }
+    |<LLAVE_APERTURA : "{">{
+        Compilador.registraLogLexico("Token: Llave de apertura " + image);
+    }
+    |<LLAVE_CERRADURA : "}">{
+        Compilador.registraLogLexico("Token: Llave de cerradura " + image);
+    }
+    |<CORCHETE_APERTURA : "[">{
+        Compilador.registraLogLexico("Token: Corchete de apertura " + image);
+    }
+    |<CORCHETE_CERRADURA : "]">{
+        Compilador.registraLogLexico("Token: Corchete de cerradura " + image);
+    }
+    |<COMILLA_DOBLE : "\"">{
+        Compilador.registraLogLexico("Token: Comilla doble " + image);
+    }
+}
+
+TOKEN : /* IDENTIFIERS */
+{
+  < ID: <LETRA> (<LETRA>|<DIGITO>)* >{
+        Compilador.registraLogLexico("Token: Identificador " + image);
+    }
+|
+  < #LETRA:
+      [
+       "\u0024",
+       "\u0041"-"\u005a",
+       "\u005f",
+       "\u0061"-"\u007a",
+       "\u00c0"-"\u00d6",
+       "\u00d8"-"\u00f6",
+       "\u00f8"-"\u00ff",
+       "\u0100"-"\u1fff",
+       "\u3040"-"\u318f",
+       "\u3300"-"\u337f",
+       "\u3400"-"\u3d2d",
+       "\u4e00"-"\u9fff",
+       "\uf900"-"\ufaff"
+      ]
+  >
+|
+  < #DIGITO:
+      [
+       "\u0030"-"\u0039",
+       "\u0660"-"\u0669",
+       "\u06f0"-"\u06f9",
+       "\u0966"-"\u096f",
+       "\u09e6"-"\u09ef",
+       "\u0a66"-"\u0a6f",
+       "\u0ae6"-"\u0aef",
+       "\u0b66"-"\u0b6f",
+       "\u0be7"-"\u0bef",
+       "\u0c66"-"\u0c6f",
+       "\u0ce6"-"\u0cef",
+       "\u0d66"-"\u0d6f",
+       "\u0e50"-"\u0e59",
+       "\u0ed0"-"\u0ed9",
+       "\u1040"-"\u1049"
+      ]
+  >
+}
+
+//Skips
+SKIP : {
+    " "
+    |"\r" 
+    |"\t" 
+    |"\n" 
+}
+
+//Los siguientes dos tokens sirven para omitir comentarios dentro del código. Fue
+//encontrado en internet.
+SKIP :{
+    <"//"(~["\r", "\n"])*>
+    | < "/*" > : DENTRO_COMENTARIO
+}
+<DENTRO_COMENTARIO> SKIP :{
+    < "*/" > : DEFAULT
+    | < ~[] >   
+}
+
+//ÁREA DE GRAMÁTICAS
+
+void unidadCompilacion():{}{
+    (importacion())*
+    (
+    LOOKAHEAD(3)declVariableGlobal()
+    |declMetodo()    
+    )*
+    <EOF>
+    {imprimeLogs();}
+}
+
+void importacion(): {
+    int [] tokensIzquierda = {};
+    int [] tokensDerecha = {
+        IMPORTACION, VOID, BOOLEANO, BYTE, SHORT, ENTERO, LONG, FLOTANTE, 
+        DOUBLE, CARACTER, NSSTRING, ARREGLO
+    };
+}{
+    try{
+        "#import" ( "\"" <ID> "\"" | "<" <ID> ">")
+{
+    System.out.println("G: Gramática de directiva de importación");
+}
+    }catch(ParseException ex){
+        registraErrorSintactico(
+            "Error de sintaxis en directiva de importación ", ex.currentToken.next);
+        skipTo(tokensIzquierda, tokensDerecha);
+    }
+}
+
+/*  Gramática
+*   DECL_VAR_GLOB   →       TIPO DECL_VAR
+*                       |   TIPO DECL_VAR "," DECL_VAR_GLOB     */
+void declVariableGlobal():{
+    int [] tokensIzquierda = {
+        DELIMITADOR_INSTRUCCION
+    };
+    int [] tokensDerecha = {
+        DELIMITADOR_INSTRUCCION, VOID, BOOLEANO, BYTE, SHORT, ENTERO, LONG, FLOTANTE, 
+        DOUBLE, CARACTER, NSSTRING, ARREGLO
+    };
+}{
+try{
+    tipo() ["[""]"] <ID> ["[""]"] [ "=" expresion() ]
+}catch(ParseException ex){
+    registraErrorSintactico(
+            "Error de sintaxis en declaración de variable global ", ex.currentToken.next);
+    skipTo(tokensIzquierda, tokensDerecha);
+}
+    (
+try{
+    "," <ID> [ "=" expresion() ]
+}catch(ParseException ex){
+    registraErrorSintactico(
+            "Error de sintaxis en declaración de variable global ", ex.currentToken.next);
+    skipTo(tokensIzquierda, tokensDerecha);
+}
+    )* 
+try{
+    ";"
+}catch(ParseException ex){
+    registraErrorSintactico(
+            "Error de sintaxis en declaración de variable global ", ex.currentToken.next);
+}
+{
+    System.out.println("Gramática de declaración de variable global");
+}
+}
+
+/*  Gramática
+*   DECL_METODO →       TIPO_RESULTADO ID PARAMETROS BLOQUE
+*                   |   TIPO_RESULTADO ID PARAMETROS ";"        */
+void declMetodo():{
+    int [] tokensIzquierda = {
+        DELIMITADOR_INSTRUCCION
+    };
+    int [] tokensDerecha = {
+        VOID, BOOLEANO, BYTE, SHORT, ENTERO, LONG, FLOTANTE, 
+        DOUBLE, CARACTER, NSSTRING, ARREGLO
+    };
+}{
+try{
+    tipoResultado() <ID> parametros() ( bloque() | ";" )
+{
+    System.out.println("Gramática de declaración método");
+}
+}catch(ParseException ex){
+    System.out.println(ex);
+    registraErrorSintactico(
+            "Error de sintaxis en declaración de método ", ex.currentToken.next);
+    skipTo(tokensIzquierda, tokensDerecha);
+}
+}
+
+/*  Gramática
+*   PARAMETROS  →       "(" A ")"
+*   A           →       EPSILON
+*                   |   B
+*   B           →       PARAMETRO
+*                   |   PARAMETRO "," B     */
+void parametros():{
+    int [] tokensIzquierda = {
+        DELIMITADOR_INSTRUCCION, PARENTESIS_CERRADURA, LLAVE_CERRADURA
+    };
+    int [] tokensDerecha = {
+        LLAVE_APERTURA
+    };
+}{
+try{
+    "(" [ parametro() (","parametro() )* ] ")"
+}catch(ParseException ex){
+    registraErrorSintactico(
+            "Error de sintaxis en declaración de método ", ex.currentToken.next);
+    skipTo(tokensIzquierda, tokensDerecha);
+}
+}
+
+/*  Gramática
+*   PARAMETRO   →       TIPO ID     */
+void parametro():{
+    int [] tokensIzquierda = {
+        DELIMITADOR_INSTRUCCION
+    };
+    int [] tokensDerecha = {
+        COMA, PARENTESIS_CERRADURA
+    };
+}{
+try{
+    ["const"] tipo() ["[""]"] <ID> ["[""]"]
+}catch(ParseException ex){
+    System.err.println("Error de sintaxis en declaración de método parametro " +  ex.currentToken.next.beginLine + " "  +ex.currentToken.next.beginColumn);
+    registraErrorSintactico(
+            "Error de sintaxis en declaración de método ", ex.currentToken.next);
+    skipTo(tokensIzquierda, tokensDerecha);
+}
+}
+
+/*  Gramática
+*   TIPO    →   "byte" | "short" | "int" | "long" | "double"
+*               | "float" | "BOOL" | "char" | "NSString" | "NSSArray"   */
+void tipo():{}{
+    <BYTE>|<SHORT>|<ENTERO>|<LONG>|<DOUBLE>|<FLOTANTE>
+    |<BOOLEANO>|<CARACTER>|<NSSTRING>|<ARREGLO>
+}
+
+/*  Gramática
+*   TIPO_RESULTADO  →   "void" | TIPO       */
+void tipoResultado():{}{
+    <VOID> | tipo()
+}
+
+/*  Gramática
+*   EXPRESION   →   ASIGNACION | EXP_CONDICIONAL        */
+void expresion():{}{
+    LOOKAHEAD(expPrimaria() operadorAsignacion()) asignacion() | expCondicional()
+}
+
+/*  Gramática
+*   ASIGNACION    →   EXP_PRIMARIA OP_ASIGNACION EXPRESION       */
+void asignacion():{}{
+    expPrimaria() operadorAsignacion() expresion()
+}
+
+/*  Gramática
+*   OP_ASIGNACION  →    "=" | "*=" | "/=" | "%=" | "+=" | "-=" | "<<="
+*                       ">>=" | "^=" | "|=" | "&="      */
+void operadorAsignacion():{}{
+    "="|"*="|"/="|"%="|"+="|"-="|"<<="|">>="|"^="|"|="|"&="
+}
+
+//Puede eliminarse
+void expCondicional():{}{
+    expOrCond()
+}
+
+void expOrCond():{}{
+    expAndCond() ( "||" expAndCond() )*
+}
+
+void expAndCond():{}{
+    expIor() ( "&&" expIor() )*
+}
+
+void expIor():{}{
+    expXor() ( "|" expXor() )*
+}
+
+void expXor():{}{
+    expAnd() ( "^" expAnd() )*
+}
+
+void expAnd():{}{
+    expIgualdad() ( "&" expIgualdad() )*
+}
+
+void expIgualdad():{}{
+    expRelacional() ( ("=="|"!=") expRelacional() )*
+}
+
+void expRelacional():{}{
+    expRecorrimiento() ( ("<"|">"|"<="|">=") expRecorrimiento() )*
+}
+
+void expRecorrimiento():{}{
+    expAdicion() ( ("<<"|">>") expAdicion() )*
+}
+
+void expAdicion():{}{
+    expMultiplicacion() ( ("+"|"-") expMultiplicacion() )*
+}
+
+void expMultiplicacion():{}{
+    expUnaria() ( ("*"|"/"|"%") expUnaria() )*
+}
+
+void expUnaria():{}{
+    ("+"|"-")expUnaria() 
+    | expPreInc() 
+    | expPreDec() 
+    | expUnariaNoMasMenos()
+}
+
+void expPreInc():{}{
+    "++" expPrimaria()
+}
+
+void expPreDec():{}{
+    "--" expPrimaria()
+}
+
+void expUnariaNoMasMenos():{}{
+    ("~"|"!")expUnaria()
+    | expPosfija()
+}
+
+void expPosfija():{}{
+    expPrimaria() ["++"|"--"]
+}
+
+void expPrimaria():{
+System.out.println("Gramática de expresión primaria");
+}{
+    literal() 
+    | LOOKAHEAD(<ID> "(") llamadoFuncion() 
+    | <ID> 
+    | "(" expresion() ")"
+}
+/*FIXME
+*
+*/
+void literal():{
+    System.out.println("Gramática de literal");
+}{
+    <LITERAL_ENTERA>
+    | <LITERAL_FLOTANTE>
+    | <LITERAL_CARACTER>
+    | <LITERAL_STRING>
+    | <LITERAL_STRING_OBJC>
+    | <LITERAL_BOOLEANA>
+}
+
+void llamadoFuncion():{
+    System.out.println("Gramática de llamado de función");
+}{
+    <ID> argumentos()
+}
+
+void argumentos():{}{
+    "(" [expresion() ( "," expresion() )* ] ")"
+}
+
+void sentencia():{}{
+    bloque()
+    | sentVacia()
+    | sentExp() ";"
+    | sentSwitch()
+    | sentIf()
+    | sentWhile()
+    | sentDo()
+    | sentFor()
+    | sentBreak()
+    | sentContinue()
+    | sentReturn()
+}
+
+void bloque():{
+    int [] tokensIzquierda = {
+    };
+    int [] tokensDerecha = {
+        DELIMITADOR_INSTRUCCION, LLAVE_APERTURA, LLAVE_CERRADURA,
+        BOOLEANO, BYTE, SHORT, ENTERO, LONG, FLOTANTE, DOUBLE, CARACTER, 
+        NSSTRING, ARREGLO, 
+        FOR, WHILE, IF, DO, SWITCH, BREAK, CONTINUE, RETURN,
+        ID, OP_INCREMENTO, OP_DECREMENTO
+    };
+}{
+try{
+    "{" 
+}catch(ParseException ex){
+    registraErrorSintactico(
+            "Error de sintaxis en bloque de sentencias ", ex.currentToken.next);
+    skipTo(tokensIzquierda, tokensDerecha);
+}
+    (bloqueSent())*
+try{
+    "}" 
+}catch(ParseException ex){
+    registraErrorSintactico(
+            "Error de sintaxis en bloque de sentencias ", ex.currentToken.next);
+}
+}
+
+void bloqueSent():{}{
+    declVarLoc() ";" | sentencia()
+}
+
+void declVarLoc():{}{
+    tipo() <ID> [ "=" expresion() ] ("," <ID> [ "=" expresion() ] )*
+}
+
+void sentVacia():{}{
+    ";"
+}
+
+void sentExp():{
+    System.out.println("Gramática de sentencia de expresión");
+}{   
+    expPreInc()
+    | expPreDec() 
+    | LOOKAHEAD(<ID> operadorAsignacion()) asignacion() 
+    | LOOKAHEAD( <ID> "(" ) llamadoFuncion() 
+    | expPosfija() 
+}
+
+void sentSwitch():{
+    int [] tokensIzquierda = {
+        LLAVE_APERTURA
+    };
+    int [] tokensDerecha = {
+        DELIMITADOR_INSTRUCCION, LLAVE_CERRADURA,
+        BOOLEANO, BYTE, SHORT, ENTERO, LONG, FLOTANTE, DOUBLE, CARACTER, 
+        NSSTRING, ARREGLO, 
+        FOR, WHILE, IF, DO, SWITCH, BREAK, CONTINUE, RETURN,
+        ID, OP_INCREMENTO, OP_DECREMENTO
+    };
+}{
+try{
+    "switch" "(" expresion() ")" "{"
+}catch(ParseException ex){
+    registraErrorSintactico(
+            "Error de sintaxis en sentencia switch ", ex.currentToken.next);
+    skipTo(tokensIzquierda, tokensDerecha);
+}
+    ( LOOKAHEAD(":" | "case" | "default" | literal() ":") etiquetaSwitch() ( bloqueSent() )* )*
+try{
+    "}"
+}catch(ParseException ex){
+    registraErrorSintactico(
+            "Error de sintaxis en sentencia switch ", ex.currentToken.next);
+}
+}
+
+void etiquetaSwitch():{
+    int [] tokensIzquierda = {
+        DOS_PUNTOS
+    };
+    int [] tokensDerecha = {
+        DELIMITADOR_INSTRUCCION, LLAVE_CERRADURA,
+        BOOLEANO, BYTE, SHORT, ENTERO, LONG, FLOTANTE, DOUBLE, CARACTER, 
+        NSSTRING, ARREGLO, LITERAL_ENTERA,
+        FOR, WHILE, IF, DO, SWITCH, BREAK, CONTINUE, RETURN, CASE, DEFAULT,
+        ID, OP_INCREMENTO, OP_DECREMENTO
+    };
+}{   
+try{
+    "case"expresion() ":"  | "default" ":"
+}catch(ParseException ex){
+    registraErrorSintactico(
+            "Error de sintaxis en etiqueta de switch ", ex.currentToken.next);
+    skipTo(tokensIzquierda, tokensDerecha);
+}
+}
+
+void  sentIf():{
+    String mensajeError = "";
+}{
+    (LOOKAHEAD("if" "(" expresion() ")") "if" "(" expresion() ")"
+    | LOOKAHEAD("if" expresion() ")") "if"  expresion() ")" 
+    {   mensajeError = "\t\t\t if EXPRESION ) \n";}
+    | LOOKAHEAD(3)"if" "("  ")"
+    {   mensajeError = "\t\t\t if ( ) \n";}
+    | LOOKAHEAD("if" "(" (<ID> | literal())) "if" "(" expresion()
+    {   mensajeError = "\t\t\t if ( EXPRESION \n";}
+    | LOOKAHEAD(2) "if" "(" 
+    {   mensajeError = "\t\t\t if ( \n";}
+    | LOOKAHEAD(2) "if" ")"
+    {   mensajeError = "\t\t\t if ) \n"; }
+    | "if"
+    {   mensajeError = "\t\t\t if  \n"; })
+    sentencia()[ LOOKAHEAD(1) "else" sentencia() ]
+{
+    if(!mensajeError.isEmpty()){
+        registraErrorSintactico(
+            "Error de sintaxis en sentencia if\n" + mensajeError, getToken(0));
+    }
+}
+}
+
+void sentWhile():{
+    String mensajeError = "";
+}{
+    (LOOKAHEAD("while" "(" expresion() ")") "while" "(" expresion() ")" sentencia()
+    | LOOKAHEAD("while" expresion() ")") "while"  expresion() ")" 
+    {   mensajeError = "\t\t\t while EXPRESION ) \n";}
+    | LOOKAHEAD(3)"while" "("  ")"
+    {   mensajeError = "\t\t\t while ( ) \n";}
+    | LOOKAHEAD("while" "(" (<ID> | literal())) "while" "(" expresion()
+    {   mensajeError = "\t\t\t while ( EXPRESION \n";}
+    | LOOKAHEAD(2) "while" "(" 
+    {   mensajeError = "\t\t\t while ( \n";}
+    | LOOKAHEAD(2) "while" ")"
+    {   mensajeError = "\t\t\t while ) \n"; }
+    |"while"
+    {   mensajeError = "\t\t\t while  \n"; })
+{
+    if(!mensajeError.isEmpty()){
+        registraErrorSintactico(
+            "Error de sintaxis en sentencia while\n" + mensajeError, getToken(0));
+    }
+}
+}
+
+void sentDo():{
+    String mensajeError = "";
+}{
+    "do" sentencia() 
+    (LOOKAHEAD("while" "(" expresion() ")") "while" "(" expresion() ")"
+    | LOOKAHEAD("while" expresion() ")") "while"  expresion() ")" 
+    {   mensajeError = "\t\t\t while EXPRESION ) \n";}
+    | LOOKAHEAD(3)"while" "("  ")"
+    {   mensajeError = "\t\t\t while ( ) \n";}
+    | LOOKAHEAD("while" "(" (<ID> | literal())) "while" "(" expresion()
+    {   mensajeError = "\t\t\t while ( EXPRESION \n";}
+    | LOOKAHEAD(2) "while" "(" 
+    {   mensajeError = "\t\t\t while ( \n";}
+    | LOOKAHEAD(2) "while" ")"
+    {   mensajeError = "\t\t\t while ) \n"; }
+    | "while"
+    {   mensajeError = "\t\t\t while  \n"; })
+    ";"
+{
+    if(!mensajeError.isEmpty()){
+        registraErrorSintactico(
+            "Error de sintaxis en sentencia do - while\n" + mensajeError, getToken(0));
+    }
+}
+}
+
+void sentFor():{
+    String mensajeError = "";
+}{
+    (LOOKAHEAD("for" "(" cuerpoFor() ")")
+        "for" "(" cuerpoFor() ")"
+    | LOOKAHEAD("for" cuerpoFor() ")")
+        "for" cuerpoFor() ")"
+    {   mensajeError = "\t\t\t for ) \n";}
+    | LOOKAHEAD("for" "(" cuerpoFor() )
+            "for" "(" cuerpoFor()
+    {   mensajeError = "\t\t\t for (  \n";}
+    | LOOKAHEAD("for" "(" ")" )
+        "for" "(" ")"
+    {   mensajeError = "\t\t\t for ( ) \n";}
+    | "for"
+    {   mensajeError = "\t\t\t for ___ \n";})
+    sentencia()
+{
+    if(!mensajeError.isEmpty()){
+        registraErrorSintactico(
+            "Error de sintaxis en sentencia for\n" + mensajeError, getToken(0));
+    }
+}
+}
+
+void cuerpoFor():{
+    String mensajeError = "";
+}{
+    (LOOKAHEAD([ forInit() ] ";" [ expresion() ] ";" [ forAct() ])
+        [ forInit() ] ";" [ expresion() ] ";" [ forAct() ]
+    | LOOKAHEAD([ forInit() ] ";" [ expresion() ]  [ forAct() ] )
+        [ forInit() ] ";" [ expresion() ]  [ forAct() ] 
+    {   mensajeError = "\t\t\t EXPRESION ; EXPRESION _ EXPRESION \n";}
+    | LOOKAHEAD([ forInit() ] [ expresion() ] ";" [ forAct() ] )
+            [ forInit() ] [ expresion() ] ";" [ forAct() ]
+    {   mensajeError = "\t\t\t EXPRESION _ EXPRESION ; EXPRESION \n";}
+    | LOOKAHEAD([ forInit() ] [ expresion() ] [ forAct() ] )
+            [ forInit() ] [ expresion() ] [ forAct() ]
+    {   mensajeError = "\t\t\t EXPRESION _ EXPRESION _ EXPRESION \n";}
+    )
+{
+    if(!mensajeError.isEmpty()){
+        registraErrorSintactico(
+            "Error de sintaxis en sentencia for\n" + mensajeError, getToken(0));
+    }
+}
+}
+
+void forInit():{}{
+    LOOKAHEAD(tipo() <ID>) declVarLoc() | listaSentExp()
+}
+
+void listaSentExp():{}{
+    sentExp() ( "," sentExp() )*
+}
+
+void forAct():{}{
+    listaSentExp()
+}
+
+void sentBreak():{}{
+    "break" [<ID>] ";"
+}
+
+void sentContinue():{}{
+    "continue" [<ID>] ";"
+}
+
+void sentReturn():{}{
+    "return" [ expresion() ] ";"
+}

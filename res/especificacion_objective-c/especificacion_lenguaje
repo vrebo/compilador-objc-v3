@@ -1,0 +1,303 @@
+PENDIENTES Y PROBLEMAS:
+
+Problema con el manejo de errores en DECLARACION_METODO
+Se presenta un problema en el manejo de errores en la gramatica DECLARACION_METODO, 
+esto debido a que en la gramatica UNIDAD_COMPILACION se maneja un LOOKAHEAD que forza 
+a que la gramatica DECLARACION_METODO este correcta hasta el tercer token por lo cual 
+no es posible manejar producciones inclompletas hasta despues de ese punto en la gramatica 
+DECLARACION_METODO.
+
+Problema con el manejo de un error en la gramatica de ETIQUETA_SWITCH, la produccion que causa problemas es
+
+	LITERAL ":"
+
+Problema en la gramatica SENTENCIA_FOR con el manejo de error de la siguiente produccion
+
+	"for" [FOR_INIT] ";" [EXPRESION] ";" [FOR_ACT] )
+
+NOTAS:
+
+Las gramaticas SENTENCIA_IF, SENTENCIA_WHILE, SENTENCIA_DO y SENTENCIA_FOR fueron modificadas en el archivo .jj agregandoles las producciones erroneas con el fin de facilitar el manejo de errores puesto con el metodo de PANIC MODE se presentaba una confusion al saltar hasta tokens de identificadores que pudieran pertenecer a una gramatica de SENTENCIA_EXPRESION. Estos tokens eran confundidos con identificadores de la gramatica EXPRESION.
+Agregar las nuevas producciones a estas gramaticas.
+
+
+
+
+UNIDAD_COMPILACION	→	(IMPORTACION)*
+						(DECL_METODO | DECL_VAR_GLOBAL )*
+						<EOF>
+
+	Error de sintactico: Mostrar al usuario
+
+
+IMPORTACION	→	"#import" ("\"" ID "\"" | "< ID ">")
+
+	Error sintaxis saltar antes de: "#import", "void", "BOOL", "char", "byte", "short", "int", "long", "float", "double", "NSArray", "NSString"
+
+
+DECLARACION_VARIABLE_GLOBAL	→	TIPO ID [ "=" EXPRESION ]
+	
+	En error de sintaxis registrar error y saltar
+		despues de: ";"
+		antes de: ",", ";", "BOOL", "char", "byte", "short", "int", "long", "float", "double", "NSArray", "NSString"
+
+								(
+								"," ID [ "=" EXPRESION ]
+	En error de sintaxis registrar error y saltar
+		despues de:
+		antes de: ",", ";", "BOOL", "char", "byte", "short", "int", "long", "float", "double", "NSArray", "NSString"
+								)*
+
+								";"
+	En error de sintaxis registrar error y saltar
+
+
+DECLARACION_METODO	→	TIPO_RESULTADO ID PARAMETROS ( BLOQUE | ";" )
+
+	Error sintaxis saltar
+		despues de:	";"
+		antes de: 	"void", "BOOL", "char", "byte", "short", "int", "long", "float", "double", "NSArray", "NSString"
+
+
+PARAMETROS	→	"(" [ PARAMETRO ("," PARAMETRO)* ] ")"
+
+	En error sintaxis registrar error y saltar
+		despues de:	")", ";", "}"
+		antes de: 	"{"
+
+PARAMETRO	→	TIPO ID
+
+	Error sintaxis saltar
+		despues de:	")" , ","
+		
+
+TIPO	→	"BOOL" | "char" | "byte" | "short" | "int" | "long" | "float" | "double" | "NSArray" | "NSString"
+
+TIPO_RESULTADO	→	"void" | TIPO
+
+EXPRESION	→	LOOKAHEAD(EXPRESION_PRIMARIA OPERADOR_ASIGNACION) ASIGNACION
+				|	EXPRESION_CONDICIONAL
+
+
+ASIGNACION	→	EXPRESION_PRIMARIA OPERADOR_ASIGNACION EXPRESION
+
+
+OPERADOR_ASIGNACION	→	"=" | "*=" | "/=" | "%=" | "+=" | "-=" | "<<=" | ">>=" | "^=" | "|=" | "&="
+
+
+EXPRESION_CONDICIONAL	→	EXPRESION_OR_CONDICIONAL
+
+
+EXPRESION_OR_CONDICIONAL	→	EXPRESION_AND_CONDICIONAL ( "||" EXPRESION_AND_CONDICIONAL )*
+
+
+EXPRESION_AND_CONDICIONAL	→	EXPRESION_OR_INCLUSIVO ( "&&" EXPRESION_OR_INCLUSIVO )*
+
+
+EXPRESION_OR_INCLUSIVO	→	EXPRESION_OR_EXCLUSIVO ( "|" EXPRESION_OR_EXCLUSIVO )*
+
+
+EXPRESION_OR_EXCLUSIVO	→	EXPRESION_AND ( "^" EXPRESION_AND )*
+
+
+EXPRESION_AND	→	EXPRESION_IGUALDAD ( "&" EXPRESION_IGUALDAD )*
+
+
+EXPRESION_IGUALDAD	→	EXPRESION_RELACIONAL ( ("=="|"!=") EXPRESION_RELACIONAL )*
+
+
+EXPRESION_RELACIONAL	→	EXPRESION_RECORRIMIENTO ( ("<"|">"|"<="|">=") EXPRESION_RECORRIMIENTO )*
+
+
+EXPRESION_RECORRIMIENTO	→	EXPRESION_ADICION ( ("<<"|">>") EXPRESION_ADICION )*
+
+
+EXPRESION_ADICION	→	EXPRESION_MULTIPLICACION ( ("+"|"-") EXPRESION_MULTIPLICACION )*
+
+
+EXPRESION_MULTIPLICACION	→	EXPRESION_UNARIA ( ("*"|"/"|"%") EXPRESION_UNARIA )*
+
+
+EXPRESION_UNARIA	→	("+"|"-") EXPRESION_UNARIA
+						| EXPRESION_PREINCREMENTO
+						| EXPRESION_PREDECREMENTO
+						| EXPRESION_UNARIA_NOMASMENOS
+
+
+EXPRESION_PREINCREMENTO	→	"++" EXPRESION_PRIMARIA
+
+
+EXPRESION_PREDECREMENTO	→	"--" EXPRESION_PRIMARIA
+
+
+EXPRESION_UNARIA_NOMASMENOS	→	("~"|"!") EXPRESION_UNARIA
+								| EXPRESION_POSFIJA
+
+
+EXPRESION_POSFIJA	→	EXPRESION_PRIMARIA ["++"|"--"]
+
+
+EXPRESION_PRIMARIA	→	LITERAL 
+						| LOOKAHEAD(ID "(") LLAMADO_FUNCION 
+						| ID 
+						| "(" EXPRESION ")"
+
+
+LLAMADO_FUNCION	→	ID ARGUMENTOS
+
+
+ARGUMENTOS	→	"(" [ EXPRESION ("," EXPRESION)* ] ")"
+
+
+SENTENCIA	→	BLOQUE
+				| SENTENCIA_VACIA
+				| SENTENCIA_EXPRESION ";"
+				| SENTENCIA_SWITCH
+				| SENTENCIA_IF
+				| SENTENCIA_WHILE
+				| SENTENCIA_DO
+				| SENTENCIA_FOR
+				| SENTENCIA_BREAK
+				| SENTENCIA_CONTINUE
+				| SENTENCIA_RETURN
+
+
+BLOQUE	→	"{"
+	En error de sintaxis registrar error y saltar
+		despues de: 
+		antes de: ";", "{", "}",
+		"BOOL", "char", "byte", "short", "int", "long", "float", "double", "NSArray", "NSString",
+		"if", "for", "while", "do", "switch", "break", "continue", "return"
+		ID, "++", "--"
+		
+		(BLOQUE_SENTENCIAS)*
+
+		"}"
+	En error de sintaxis registrar error
+
+BLOQUE_SENTENCIAS	→	DECLARACION_VARIABLE_LOCAL ";"
+
+	En error de sintaxis registrar error y saltar
+		despues de: ";"
+		antes de: "BOOL", "char", "byte", "short", "int", "long", "float", "double", "NSArray", "NSString", ID, "{", "if", "for", "while", "do", "switch", "break", "continue", "return"
+
+						| SENTENCIA
+
+
+DECLARACION_VARIABLE_LOCAL	→	TIPO DECLARACION_VARIABLE 
+	
+	En error de sintaxis registrar error y saltar
+		despues de:
+		antes de: ",", ";", "BOOL", "char", "byte", "short", "int", "long", "float", "double", "NSArray", "NSString", ID, "{", "if", "for", "while", "do", "switch", "break", "continue", "return"
+								
+								(
+
+								"," DECLARACION_VARIABLE
+	En error de sintaxis registrar error y saltar
+		despues de:
+		antes de: ",", ";", "BOOL", "char", "byte", "short", "int", "long", "float", "double", "NSArray", "NSString", ID, "{", "if", "for", "while", "do", "switch", "break", "continue", "return"
+
+								)*
+
+
+SENTENCIA_VACIA	→	";"
+
+
+SENTENCIA_EXPRESION	→	EXPRESION_PREINCREMENTO
+						| EXPRESION_PREDECREMENTO
+						| LOOKAHEAD(ID "(") LLAMADO_FUNCION
+						| LOOKAHEAD(ID OPERADOR_ASIGNACION) ASIGNACION
+						| EXPRESION_POSFIJA
+
+	En error de sintaxis registrar error y saltar
+		despues de: "}"
+		antes de: ";", "BOOL", "char", "byte", "short", "int", "long", "float", "double", "NSArray", "NSString", ID, "{", "if", "for", "while", "do", "switch", "break", "continue", "return"
+
+
+SENTENCIA_SWITCH	→	"switch" "(" EXPRESION ")" "{"
+
+	En error de sintaxis registrar error y saltar
+			despues de: "{"
+			antes de: 
+			";", "}"
+			"BOOL", "char", "byte", "short", "int", "long", "float", "double", "NSArray", "NSString", ID, "{", "if", "for", "while", "do", "switch", "break", "continue", "return"
+			ID, "++", "--"
+
+						LOOKAHEAD(":" | "case" | "default" | LITERAL ":") ETIQUETA_SWITCH (BLOQUE_SENTENCIAS)* 
+
+						"}"
+
+	En error de sintaxis registrar error
+
+
+ETIQUETA_SWITCH	→	"case" EXPRESION ":"
+
+	En error de sintaxis registrar error y saltar
+			despues de: ":"
+			antes de: "BOOL", "char", "byte", "short", "int", "long", "float", "double", "NSArray", "NSString", ID, "{", "if", "for", "while", "do", "switch", "break", "continue", "return", "case", "default"
+
+
+SENTENCIA_IF	→	"if" "(" EXPRESION ")"
+					
+	En error de sintaxis registrar error y saltar
+				despues de: ")"
+				antes de: "BOOL", "char", "byte", "short", "int", "long", "float", "double", "NSArray", "NSString", ID, "{", "if", "for", "while", "do", "switch", "break", "continue", "return"
+
+					SENTENCIA [ LOOKAHEAD(1) "else" [SENTENCIA] ]
+
+	
+SENTENCIA_WHILE	→	"while" "(" EXPRESION ")"
+					
+	En error de sintaxis registrar error y saltar
+				despues de: ")"
+				antes de: "BOOL", "char", "byte", "short", "int", "long", "float", "double", "NSArray", "NSString", ID, "{", "if", "for", "while", "do", "switch", "break", "continue", "return"
+
+					[SENTENCIA]
+
+SENTENCIA_DO	→	"do" SENTENCIA "while" "("  EXPRESION ")" ";"
+					
+	En error de sintaxis registrar error y saltar
+				despues de: ";"
+				antes de: "BOOL", "char", "byte", "short", "int", "long", "float", "double", "NSArray", "NSString", ID, "{", "}" "if", "for", "while", "do", "switch", "break", "continue", "return"
+
+SENTENCIA_FOR	→	"for" "(" [FOR_INIT] ";" [EXPRESION] ";" [FOR_ACT] ")" 
+	En error de sintaxis registrar error y saltar
+				despues de: ")"
+				antes de: "BOOL", "char", "byte", "short", "int", "long", "float", "double", "NSArray", "NSString", ID, "{", "}", if", "for", "while", "do", "switch", "break", "continue", "return"
+
+				SENTENCIA
+					
+
+FOR_INIT	→	LOOKAHEAD(TIPO ID) DECLARACION_VARIABLE_LOCAL | LISTA_SENTENCIAS_EXPRESION
+
+
+LISTA_SENTENCIAS_EXPRESION	→	SENTENCIA_EXPRESION 
+
+								( 
+								"," SENTENCIA_EXPRESION 
+	En error de sintaxis registrar error y saltar
+			despues de:
+			antes de: "++", "--", ID
+								)*
+
+
+FOR_ACT	→	LISTA_SENTENCIAS_EXPRESION
+	
+
+SENTENCIA_BREAK	→	"break" [ID] ";"
+
+	En error de sintaxis registrar error y saltar
+				despues de: "}"
+				antes de: "BOOL", "char", "byte", "short", "int", "long", "float", "double", "NSArray", "NSString", ID, "{", "}", if", "for", "while", "do", "switch", "break", "continue", "return"
+
+SENTENCIA_CONTINUE	→	"continue" [ID] ";"
+
+	En error de sintaxis registrar error y saltar
+				despues de: "}"
+				antes de: "BOOL", "char", "byte", "short", "int", "long", "float", "double", "NSArray", "NSString", ID, "{", "}", if", "for", "while", "do", "switch", "break", "continue", "return"
+
+SENTENCIA_RETURN	→	"return" [EXPRESION] ";"
+	
+	En error de sintaxis registrar error y saltar
+				despues de: "}"
+				antes de: "BOOL", "char", "byte", "short", "int", "long", "float", "double", "NSArray", "NSString", ID, "{", "}", if", "for", "while", "do", "switch", "break", "continue", "return"

@@ -1,0 +1,510 @@
+Token: Directiva de importación #import
+Token: Identificador Foundation
+Token: Directiva de importación #import
+Token: Directiva de importación #import
+Token: Identificador Foundation
+Token: Palabra reservada de tipo de dato primitivo int
+Token: Identificador var
+Token: Delimitador de instrucción ;
+Token: Palabra reservada de tipo de dato primitivo BOOL
+Token: Identificador var2
+Token: Coma ,
+Token: Identificador var3
+Token: Delimitador de instrucción ;
+Token: Palabra reservada de tipo de dato primitivo float
+Token: Identificador var2
+Token: Coma ,
+Token: Identificador var3
+Token: Operador de asignación =
+Token: Literal flotante : 23.3
+Token: Delimitador de instrucción ;
+Token: Palabra reservada de tipo de dato primitivo float
+Token: Identificador var2
+Token: Coma ,
+Token: Delimitador de instrucción ;
+Token: Palabra reservada de tipo de dato primitivo float
+Token: Identificador var2
+Token: Coma ,
+Token: Identificador var
+Token: Operador de asignación =
+Token: Identificador var
+Token: Delimitador de instrucción ;
+Token: Palabra reservada de tipo de dato primitivo float
+Token: Identificador var2
+Token: Coma ,
+Token: Operador de asignación =
+Token: Literal entera: 34
+Token: Delimitador de instrucción ;
+Token: Palabra reservada void
+Token: Identificador funcion
+Token: Parentesís de apertura (
+Token: Palabra reservada de tipo de dato primitivo int
+Token: Identificador s
+Token: Coma ,
+Token: Identificador s
+Token: Coma ,
+Token: Palabra reservada de tipo de dato primitivo float
+Token: Identificador y
+Token: Parentesís de cerradura )
+Token: Delimitador de instrucción ;
+Token: Palabra reservada void
+Token: Identificador funcion
+Token: Parentesís de apertura (
+Token: Parentesís de cerradura )
+Token: Delimitador de instrucción ;
+Token: Palabra reservada void
+Token: Identificador funcion
+Token: Parentesís de apertura (
+Token: Coma ,
+Token: Parentesís de cerradura )
+Token: Delimitador de instrucción ;
+Token: Palabra reservada void
+Token: Identificador funcion
+Token: Parentesís de apertura (
+Token: Coma ,
+Token: Palabra reservada de tipo de dato primitivo int
+Token: Identificador y
+Token: Parentesís de cerradura )
+Token: Delimitador de instrucción ;
+Token: Palabra reservada void
+Token: Identificador funcion
+Token: Parentesís de apertura (
+Token: Palabra reservada de tipo de dato primitivo int
+Token: Identificador y
+Token: Coma ,
+Token: Identificador y
+Token: Coma ,
+Token: Palabra reservada de tipo de dato primitivo float
+Token: Identificador u
+Token: Coma ,
+Token: Identificador y
+Token: Parentesís de cerradura )
+Token: Delimitador de instrucción ;
+Token: Palabra reservada de tipo de dato primitivo int
+Token: Identificador main
+Token: Parentesís de apertura (
+Token: Parentesís de cerradura )
+Token: Llave de apertura {
+Token: Palabra reservada de tipo de dato primitivo NSString
+Token: Identificador figura
+Token: Operador de asignación =
+Token: Literal string de objective c: @"Triangulo"
+Token: Delimitador de instrucción ;
+Token: Identificador metodo
+Token: Parentesís de apertura (
+Token: Parentesís de cerradura )
+Token: Delimitador de instrucción ;
+Token: Identificador metodo
+Token: Parentesís de apertura (
+Token: Parentesís de cerradura )
+Token: Delimitador de instrucción ;
+Token: Palabra reservada de tipo de dato primitivo int
+Token: Identificador base
+Token: Operador de asignación =
+Token: Literal entera: 15
+Token: Delimitador de instrucción ;
+Token: Palabra reservada de tipo de dato primitivo int
+Token: Identificador altura
+Token: Operador de asignación =
+Token: Literal entera: 20
+Token: Delimitador de instrucción ;
+Token: Palabra reservada de tipo de dato primitivo float
+Token: Identificador area
+Token: Delimitador de instrucción ;
+Token: Palabra reservada de tipo de dato primitivo int
+Token: Identificador codigoColor
+Token: Operador de asignación =
+Token: Literal entera: 0
+Token: Delimitador de instrucción ;
+Token: Palabra reservada de tipo de dato primitivo NSString
+Token: Identificador color
+Token: Delimitador de instrucción ;
+Token: Palabra reservada if
+Token: Parentesís de apertura (
+Token: Identificador a
+Token: Parentesís de cerradura )
+Token: Palabra reservada if
+Token: Literal entera: 6
+Token: Literal entera: 5
+Token: Parentesís de cerradura )
+Token: Palabra reservada if
+Token: Parentesís de apertura (
+Token: Parentesís de cerradura )
+Token: Palabra reservada if
+Token: Parentesís de apertura (
+Token: Identificador a
+Token: Palabra reservada if
+Token: Parentesís de apertura (
+Token: Identificador area
+Token: Literal entera: 120
+Token: Parentesís de cerradura )
+Token: Llave de apertura {
+Token: Identificador NSLog
+Token: Parentesís de apertura (
+Token: Literal entera: 3
+Token: Parentesís de cerradura )
+Token: Delimitador de instrucción ;
+Token: Llave de cerradura }
+Token: Palabra reservada else
+Token: Llave de apertura {
+Token: Identificador NSLog
+Token: Parentesís de apertura (
+Token: Literal entera: 555
+Token: Parentesís de cerradura )
+Token: Delimitador de instrucción ;
+Token: Llave de cerradura }
+Token: Palabra reservada while
+Token: Palabra reservada while
+Token: Parentesís de apertura (
+Token: Parentesís de cerradura )
+Token: Palabra reservada while
+Token: Parentesís de cerradura )
+Token: Palabra reservada while
+Token: Parentesís de apertura (
+Token: Palabra reservada while
+Token: Identificador a
+Token: Identificador a
+Token: Parentesís de cerradura )
+Token: Palabra reservada while
+Token: Parentesís de apertura (
+Token: Identificador a
+Token: Identificador a
+Token: Palabra reservada while
+Token: Parentesís de apertura (
+Token: Identificador area
+Token: Operador de cociente /
+Token: Literal entera: 2
+Token: Literal entera: 0
+Token: Operador AND lógico &&
+Token: Literal booleana: true
+Token: Parentesís de cerradura )
+Token: Llave de apertura {
+Token: Palabra reservada if
+Token: Parentesís de apertura (
+Token: Identificador area
+Token: Operador de cociente /
+Token: Literal entera: 2
+Token: Literal entera: 15
+Token: Operador AND lógico &&
+Token: Identificador area
+Token: Operador de cociente /
+Token: Literal entera: 2
+Token: Literal entera: 30
+Token: Parentesís de cerradura )
+Token: Llave de apertura {
+Token: Identificador area
+Token: Operador de incremento ++
+Token: Delimitador de instrucción ;
+Token: Identificador codigoColor
+Token: Operador de asignación =
+Token: Literal entera: 1
+Token: Delimitador de instrucción ;
+Token: Llave de cerradura }
+Token: Palabra reservada else
+Token: Palabra reservada if
+Token: Parentesís de apertura (
+Token: Identificador area
+Token: Operador de cociente /
+Token: Literal entera: 2
+Token: Literal entera: 1
+Token: Operador AND lógico &&
+Token: Identificador area
+Token: Operador de cociente /
+Token: Literal entera: 2
+Token: Literal entera: 15
+Token: Parentesís de cerradura )
+Token: Llave de apertura {
+Token: Identificador area
+Token: Operador de decremento --
+Token: Delimitador de instrucción ;
+Token: Identificador codigoColor
+Token: Operador de asignación =
+Token: Literal entera: 2
+Token: Delimitador de instrucción ;
+Token: Llave de cerradura }
+Token: Palabra reservada else
+Token: Palabra reservada if
+Token: Parentesís de apertura (
+Token: Identificador area
+Token: Operador de cociente /
+Token: Literal entera: 2
+Token: Literal entera: 30
+Token: Operador AND lógico &&
+Token: Identificador area
+Token: Operador de cociente /
+Token: Literal entera: 2
+Token: Literal entera: 45
+Token: Parentesís de cerradura )
+Token: Llave de apertura {
+Token: Identificador area
+Token: Operador de asignacion con sustracción -=
+Token: Literal entera: 2
+Token: Delimitador de instrucción ;
+Token: Identificador codigoColor
+Token: Operador de asignación =
+Token: Literal entera: 3
+Token: Delimitador de instrucción ;
+Token: Operador de decremento --
+Token: Identificador codigoColor
+Token: Delimitador de instrucción ;
+Token: Llave de cerradura }
+Token: Llave de cerradura }
+Token: Palabra reservada switch
+Token: Parentesís de apertura (
+Token: Identificador codigoColor
+Token: Llave de apertura {
+Token: Palabra reservada case
+Token: Literal entera: 4
+Token: Dos puntos :
+Token: Identificador color
+Token: Operador de asignación =
+Token: Literal string de objective c: @"Rojo"
+Token: Delimitador de instrucción ;
+Token: Palabra reservada break
+Token: Delimitador de instrucción ;
+Token: Dos puntos :
+Token: Identificador color
+Token: Operador de asignación =
+Token: Literal string de objective c: @"Azul"
+Token: Delimitador de instrucción ;
+Token: Palabra reservada break
+Token: Delimitador de instrucción ;
+Token: Palabra reservada case
+Token: Dos puntos :
+Token: Identificador color
+Token: Operador de asignación =
+Token: Literal string de objective c: @"Verde"
+Token: Delimitador de instrucción ;
+Token: Palabra reservada break
+Token: Delimitador de instrucción ;
+Token: Palabra reservada case
+Token: Literal entera: 4
+Token: Dos puntos :
+Token: Identificador color
+Token: Operador de asignación =
+Token: Literal string de objective c: @"Verde"
+Token: Delimitador de instrucción ;
+Token: Palabra reservada break
+Token: Delimitador de instrucción ;
+Token: Palabra reservada default
+Token: Identificador color
+Token: Operador de asignación =
+Token: Literal string de objective c: @"Negro"
+Token: Delimitador de instrucción ;
+Token: Palabra reservada break
+Token: Delimitador de instrucción ;
+Token: Llave de cerradura }
+Token: Palabra reservada do
+Token: Llave de apertura {
+Token: Identificador NSLog
+Token: Parentesís de apertura (
+Token: Literal string de objective c: @"La figura es un %@, y su color definido es %@"
+Token: Coma ,
+Token: Identificador figura
+Token: Coma ,
+Token: Identificador color
+Token: Parentesís de cerradura )
+Token: Delimitador de instrucción ;
+Token: Llave de cerradura }
+Token: Palabra reservada while
+Token: Parentesís de apertura (
+Token: Identificador a
+Token: Identificador b
+Token: Parentesís de cerradura )
+Token: Delimitador de instrucción ;
+Token: Palabra reservada do
+Token: Identificador NSLog
+Token: Parentesís de apertura (
+Token: Literal string de objective c: @"La figura es un %@, y su color definido es %@"
+Token: Coma ,
+Token: Identificador figura
+Token: Coma ,
+Token: Identificador color
+Token: Parentesís de cerradura )
+Token: Delimitador de instrucción ;
+Token: Palabra reservada while
+Token: Parentesís de apertura (
+Token: Identificador a
+Token: Identificador b
+Token: Parentesís de cerradura )
+Token: Delimitador de instrucción ;
+Token: Palabra reservada do
+Token: Llave de apertura {
+Token: Identificador NSLog
+Token: Parentesís de apertura (
+Token: Literal string de objective c: @"La figura es un %@, y su color definido es %@"
+Token: Coma ,
+Token: Identificador figura
+Token: Coma ,
+Token: Identificador color
+Token: Parentesís de cerradura )
+Token: Delimitador de instrucción ;
+Token: Llave de cerradura }
+Token: Palabra reservada while
+Token: Parentesís de apertura (
+Token: Parentesís de cerradura )
+Token: Delimitador de instrucción ;
+Token: Palabra reservada do
+Token: Llave de apertura {
+Token: Identificador NSLog
+Token: Parentesís de apertura (
+Token: Literal string de objective c: @"La figura es un %@, y su color definido es %@"
+Token: Coma ,
+Token: Identificador figura
+Token: Coma ,
+Token: Identificador color
+Token: Parentesís de cerradura )
+Token: Delimitador de instrucción ;
+Token: Llave de cerradura }
+Token: Palabra reservada while
+Token: Parentesís de apertura (
+Token: Identificador a
+Token: Operador de adición +
+Token: Identificador b
+Token: Delimitador de instrucción ;
+Token: Palabra reservada do
+Token: Llave de apertura {
+Token: Identificador NSLog
+Token: Parentesís de apertura (
+Token: Literal string de objective c: @"La figura es un %@, y su color definido es %@"
+Token: Coma ,
+Token: Identificador figura
+Token: Coma ,
+Token: Identificador color
+Token: Parentesís de cerradura )
+Token: Delimitador de instrucción ;
+Token: Llave de cerradura }
+Token: Palabra reservada while
+Token: Identificador a
+Token: Operador de adición +
+Token: Identificador b
+Token: Parentesís de cerradura )
+Token: Delimitador de instrucción ;
+Token: Palabra reservada do
+Token: Llave de apertura {
+Token: Identificador NSLog
+Token: Parentesís de apertura (
+Token: Literal string de objective c: @"La figura es un %@, y su color definido es %@"
+Token: Coma ,
+Token: Identificador figura
+Token: Coma ,
+Token: Identificador color
+Token: Parentesís de cerradura )
+Token: Delimitador de instrucción ;
+Token: Llave de cerradura }
+Token: Palabra reservada while
+Token: Parentesís de cerradura )
+Token: Delimitador de instrucción ;
+Token: Palabra reservada do
+Token: Llave de apertura {
+Token: Identificador NSLog
+Token: Parentesís de apertura (
+Token: Literal string de objective c: @"La figura es un %@, y su color definido es %@"
+Token: Coma ,
+Token: Identificador figura
+Token: Coma ,
+Token: Identificador color
+Token: Parentesís de cerradura )
+Token: Delimitador de instrucción ;
+Token: Llave de cerradura }
+Token: Palabra reservada while
+Token: Parentesís de apertura (
+Token: Delimitador de instrucción ;
+Token: Palabra reservada do
+Token: Llave de apertura {
+Token: Identificador NSLog
+Token: Parentesís de apertura (
+Token: Literal string de objective c: @"La figura es un %@, y su color definido es %@"
+Token: Coma ,
+Token: Identificador figura
+Token: Coma ,
+Token: Identificador color
+Token: Parentesís de cerradura )
+Token: Delimitador de instrucción ;
+Token: Llave de cerradura }
+Token: Palabra reservada while
+Token: Delimitador de instrucción ;
+Token: Palabra reservada for
+Token: Parentesís de apertura (
+Token: Palabra reservada de tipo de dato primitivo int
+Token: Identificador i
+Token: Operador de asignación =
+Token: Literal entera: 0
+Token: Delimitador de instrucción ;
+Token: Identificador a
+Token: Identificador b
+Token: Delimitador de instrucción ;
+Token: Identificador i
+Token: Operador de incremento ++
+Token: Parentesís de cerradura )
+Token: Llave de apertura {
+Token: Llave de cerradura }
+Token: Palabra reservada for
+Token: Parentesís de apertura (
+Token: Palabra reservada de tipo de dato primitivo int
+Token: Identificador i
+Token: Operador de asignación =
+Token: Literal entera: 0
+Token: Identificador a
+Token: Identificador b
+Token: Delimitador de instrucción ;
+Token: Identificador i
+Token: Operador de incremento ++
+Token: Parentesís de cerradura )
+Token: Llave de apertura {
+Token: Llave de cerradura }
+Token: Palabra reservada for
+Token: Parentesís de apertura (
+Token: Palabra reservada de tipo de dato primitivo int
+Token: Identificador i
+Token: Operador de asignación =
+Token: Literal entera: 0
+Token: Delimitador de instrucción ;
+Token: Identificador a
+Token: Identificador b
+Token: Identificador i
+Token: Operador de incremento ++
+Token: Parentesís de cerradura )
+Token: Llave de apertura {
+Token: Llave de cerradura }
+Token: Palabra reservada for
+Token: Parentesís de apertura (
+Token: Palabra reservada de tipo de dato primitivo int
+Token: Identificador i
+Token: Operador de asignación =
+Token: Literal entera: 0
+Token: Identificador a
+Token: Identificador b
+Token: Identificador i
+Token: Operador de incremento ++
+Token: Parentesís de cerradura )
+Token: Llave de apertura {
+Token: Llave de cerradura }
+Token: Palabra reservada for
+Token: Parentesís de apertura (
+Token: Palabra reservada de tipo de dato primitivo int
+Token: Identificador i
+Token: Operador de asignación =
+Token: Literal entera: 0
+Token: Delimitador de instrucción ;
+Token: Identificador a
+Token: Identificador b
+Token: Delimitador de instrucción ;
+Token: Identificador i
+Token: Operador de incremento ++
+Token: Llave de apertura {
+Token: Llave de cerradura }
+Token: Identificador NSLog
+Token: Parentesís de apertura (
+Token: Literal string de objective c: @"La figura es un %@, y su color definido es %@"
+Token: Coma ,
+Token: Identificador figura
+Token: Coma ,
+Token: Identificador color
+Token: Parentesís de cerradura )
+Token: Delimitador de instrucción ;
+Token: Palabra reservada return
+Token: Literal entera: 0
+Token: Delimitador de instrucción ;
+Token: Llave de cerradura }
+

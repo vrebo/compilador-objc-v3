@@ -1,8 +1,8 @@
-package org.itver.objccompilator.controller;
+package org.itver.objccompiler.controller;
 
-import org.itver.objccompilator.model.compilator.AnalizadorSemantico;
-import org.itver.objccompilator.model.compilator.Compilador;
-import org.itver.objccompilator.model.compilator.ParseException;
+import org.itver.objccompiler.model.compilator.AnalizadorSemantico;
+import org.itver.objccompiler.model.compilator.Compilador;
+import org.itver.objccompiler.model.compilator.ParseException;
 import org.itver.objccompiler.view.component.MainPanel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,7 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.swing.JFileChooser;
-import org.itver.objccompilator.model.SourceCode;
+import org.itver.objccompiler.model.SourceCode;
 import org.itver.util.FileUtilities;
 import org.itver.util.Notification;
 
@@ -48,7 +48,7 @@ public class Controller extends KeyAdapter implements ActionListener {
                         save();
                     }
                 }
-                compilar();
+                compile();
                 break;
             case "Limpiar Area":
                 limpiar();
@@ -97,42 +97,38 @@ public class Controller extends KeyAdapter implements ActionListener {
         } catch (FileNotFoundException ex) {
             Notification.error(panel,
                     "Error al salvar el archivo: " + sourceCode.getCodeFile().getAbsolutePath());
-            System.out.println(ex + "\n" + ex.getMessage());
         }
     }
 
     private void save() {
         try {
-            String texto = panel.getCodeEditor().getCode();
+            String code = panel.getCodeEditor().getCode();
             PrintWriter pw = new PrintWriter(sourceCode.getCodeFile());
-            FileUtilities.writeToFile(sourceCode.getCodeFile(), texto);
-            pw.write(texto);
+            FileUtilities.writeToFile(sourceCode.getCodeFile(), code);
+            pw.write(code);
             pw.flush();
         } catch (FileNotFoundException ex) {
             Notification.error(panel,
                     "Error al salvar el archivo: " + sourceCode.getCodeFile().getAbsolutePath());
-            System.err.println("Problema al guardar el código fuente.");
         }
     }
 
     private void openSourceCodeFile() {
         JFileChooser selectorDeArchivos = new JFileChooser();
-        String codigoTexto;
+        String code;
         try {
-            int opcion = selectorDeArchivos.showOpenDialog(panel);
-            if (opcion == JFileChooser.APPROVE_OPTION) {
+            if (selectorDeArchivos.showOpenDialog(panel) == JFileChooser.APPROVE_OPTION) {
                 sourceCode = new SourceCode(selectorDeArchivos.getSelectedFile());
-                codigoTexto = FileUtilities.readFile(sourceCode.getCodeFile().getAbsolutePath());
-                panel.getCodeEditor().setCode(codigoTexto);
+                code = FileUtilities.readFile(sourceCode.getCodeFile().getAbsolutePath());
+                panel.getCodeEditor().setCode(code);
             }
         } catch (IOException ex) {
             Notification.error(panel,
                     "Error al abrir el archivo: " + sourceCode.getCodeFile().getAbsolutePath());
-            System.out.println(ex + "\n" + ex.getMessage());
         }
     }
 
-    private void compilar() {
+    private void compile() {
         if (sourceCode == null) {
             return;
         }
@@ -154,7 +150,6 @@ public class Controller extends KeyAdapter implements ActionListener {
         } catch (FileNotFoundException | ParseException ex) {
             Notification.error(panel,
                     "Error al parsear el código fuente: " + ex.getMessage());
-            System.err.println("Tu código produce excepciones de parseo");
         }
     }
 

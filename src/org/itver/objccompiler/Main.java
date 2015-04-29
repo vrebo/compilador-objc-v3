@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.itver.objccompilator;
+package org.itver.objccompiler;
 
 import org.itver.objccompiler.view.component.Menu;
 import org.itver.objccompiler.view.component.MainPanel;
@@ -11,7 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.UIManager;
 import static javax.swing.UIManager.getSystemLookAndFeelClassName;
 import javax.swing.UnsupportedLookAndFeelException;
-import org.itver.objccompilator.controller.Controller;
+import org.itver.objccompiler.controller.Controller;
 
 /**
  *

@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.itver.objccompilator.model.compilator;
+package org.itver.objccompiler.model.compilator;
 
-import org.itver.objccompilator.model.Identificador;
-import org.itver.objccompilator.model.Funcion;
+import org.itver.objccompiler.model.Identificador;
+import org.itver.objccompiler.model.Funcion;
 import java.util.ArrayList;
 import java.util.HashMap;
 

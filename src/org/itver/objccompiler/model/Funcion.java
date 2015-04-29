@@ -1,4 +1,4 @@
-package org.itver.objccompilator.model;
+package org.itver.objccompiler.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;

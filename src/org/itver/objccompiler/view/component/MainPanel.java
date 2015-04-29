@@ -12,7 +12,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import org.itver.objccompilator.controller.Controller;
+import org.itver.objccompiler.controller.Controller;
 import org.itver.component.CodeEditor;
 import org.itver.component.OutputPane;
 

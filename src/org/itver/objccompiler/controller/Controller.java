@@ -1,9 +1,5 @@
 package org.itver.objccompiler.controller;
 
-import org.itver.objccompiler.model.compilator.AnalizadorSemantico;
-import org.itver.objccompiler.model.compilator.Compilador;
-import org.itver.objccompiler.model.compilator.ParseException;
-import org.itver.objccompiler.view.component.MainPanel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -13,6 +9,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import javax.swing.JFileChooser;
 import org.itver.objccompiler.model.SourceCode;
+import org.itver.objccompiler.model.compilator.AnalizadorSemantico;
+import org.itver.objccompiler.model.compilator.Compilador;
+import org.itver.objccompiler.model.compilator.ParseException;
+import org.itver.objccompiler.view.component.MainPanel;
 import org.itver.util.FileUtilities;
 import org.itver.util.Notification;
 

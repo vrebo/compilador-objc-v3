@@ -3,151 +3,220 @@ options{
 }
 
 PARSER_BEGIN(Compilador)
-    package compilador;
+package org.itver.objccompiler.model.compiler;
 
-    import java.io.FileNotFoundException;
-    import java.io.FileReader;
-    import java.io.PrintWriter;
-    import java.io.File;
-    
-    public class Compilador {
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.List;
+import org.itver.ob.*;
+import org.itver.util.FileUtilities;
 
-        private static final StringBuilder logAnalisisLexico;
-        private static final StringBuilder logAnalisisSintactico;
-        private static final StringBuilder logAnalisisSemantico;
 
-        public static int contadorErrores;       
 
-        static {
-            logAnalisisLexico = new StringBuilder();
-            logAnalisisSintactico = new StringBuilder();
-            logAnalisisSemantico = new StringBuilder();
-            contadorErrores = 0;
-        }    
+public class Compilador {
 
-        public static void main (String args [] ) throws FileNotFoundException {
-                Compilador compilador = new Compilador(new File("res/Codigo02.mm"));
-                try{
-                    compilador.unidadCompilacion();
-                }catch(ParseException ex){
-                    System.out.println(ex.getMessage());
-                }
-        }
+    private static final StringBuilder logAnalisisLexico;
+    private static final StringBuilder logAnalisisSintactico;
+    private static final StringBuilder logAnalisisSemantico;
 
-        private File codigo;
+    private static final List<LogMessage> lexicalLog;
+    private static final List<LogMessage> syntaticLog;
+    private static final List<LogMessage> semanticLog;
 
-        public Compilador(File codigo) throws FileNotFoundException{
-            this(new FileReader(codigo));
-            this.codigo = codigo;
-        }
+    private static int contadorErrores;
 
-        public void imprimeLogs(){
-            imprimeAnalisisLexico();
-            imprimeAnalisisSintactico();
-            imprimeAnalisisSemantico();
-        }
+    static {
+        logAnalisisLexico = new StringBuilder();
+        logAnalisisSintactico = new StringBuilder();
+        logAnalisisSemantico = new StringBuilder();
+        lexicalLog = new ArrayList<LogMessage>();
+        syntaticLog = new ArrayList<LogMessage>();
+        semanticLog = new ArrayList<LogMessage>();
+        contadorErrores = 0;
+    }
 
-        private void imprimeAnalisisLexico() {
-            imprimeArchivo
-                ("res/analsis_lexico_" + codigo.getName() + ".txt",
-                Compilador.getLogAnalisisLexico().toString());
-        }
+    public static void registraLogLexico(String mensaje) {
+        logAnalisisLexico.append(mensaje).append("\u005cn");
+    }
 
-        private void imprimeAnalisisSintactico() {
-            imprimeArchivo
-                ("res/analsis_sintactico_" + codigo.getName() + ".txt",
-                Compilador.getLogAnalisisSintactico().toString());
-        }
+    public static void registraLogSintactico(String mensaje) {
+        logAnalisisSintactico.append(mensaje).append("\u005cn");
+    }
 
-        private void imprimeAnalisisSemantico() {
-            imprimeArchivo
-                ("res/analsis_semantico_" + codigo.getName() + ".txt",
-                Compilador.getLogAnalisisSemantico().toString());
-        }
-        
-        private void imprimeArchivo(String nombreArchivo, String contenido) {
-            PrintWriter pw;
-            try {
-                pw = new PrintWriter(nombreArchivo);
-                pw.println(contenido);
-                pw.flush();
-            } catch (FileNotFoundException ex) {                
-                System.err.println("No se pudo encontrar el archivo");
-            }
-        }
+    public static void registraLogSemantico(String mensaje) {
+        contadorErrores++;
+        logAnalisisSemantico.append(mensaje).append("\u005cn");
+    }
 
-        public static void registraLogLexico(String mensaje){            
-            logAnalisisLexico.append(mensaje).append("\n");
-        }
-
-        public static void registraLogSintactico(String mensaje){
-            logAnalisisSintactico.append(mensaje).append("\n");
-        }
-
-        public static void registraLogSemantico(String mensaje){
-            contadorErrores++;
-            logAnalisisSemantico.append(mensaje).append("\n");
-        }
-
-        public static void registraErrorSintactico(String mensaje, Token token){
-            contadorErrores++;
-            StringBuilder sb = new StringBuilder()
+    public static void registraErrorSintactico(String mensaje, Token token) {
+        contadorErrores++;
+        StringBuilder sb = new StringBuilder()
                 .append(mensaje)
                 .append("Linea: ").append(token.beginLine)
                 .append(" Columna: ").append(token.beginColumn);
-                registraLogSintactico(sb.toString());
+        logSyntacticErrorMessage(sb.toString());
+        registraLogSintactico(sb.toString());
+    }
+
+        public static StringBuilder getLogAnalisisLexico() {
+        return logAnalisisLexico;
+    }
+
+    public static StringBuilder getLogAnalisisSintactico() {
+        return logAnalisisSintactico;
+    }
+
+    public static StringBuilder getLogAnalisisSemantico() {
+        return logAnalisisSemantico;
+    }
+
+    public static void initLogs() {
+        logAnalisisLexico.setLength(0);
+        logAnalisisSintactico.setLength(0);
+        logAnalisisSemantico.setLength(0);
+    }
+
+    public static void logLexicalErrorMessage(String message){
+        lexicalLog.add(new LogErrorMessage(message));
+    }
+
+    public static void logSyntacticErrorMessage(String message){
+        syntaticLog.add(new LogErrorMessage(message));
+    }
+
+    public static void logLexicalDebugMessage(String message){
+        lexicalLog.add(new LogDebugMessage(message));
+    }
+
+    public static void logSystacticDebugMessage(String message){
+        syntaticLog.add(new LogDebugMessage(message));
+    }
+
+    public static void logLexicalInfoMessage(String message){
+        lexicalLog.add(new LogInfoMessage(message));
+    }
+
+    public static void logSystacticInfoMessage(String message){
+        syntaticLog.add(new LogInfoMessage(message));
+    }
+
+    public static void logLexicalWarningMessage(String message){
+        lexicalLog.add(new LogWarningMessage(message));
+    }
+
+    public static void logSystacticWarningMessage(String message){
+        syntaticLog.add(new LogWarningMessage(message));
+    }
+
+    public static void logLexicalMessage(String message){
+        lexicalLog.add(new LogMessage(message));
+    }
+
+    public static void logSystacticMessage(String message){
+        syntaticLog.add(new LogMessage(message));
+    }
+
+    public static List<LogMessage> getLexicalLog(){
+        return lexicalLog;
+    }
+    
+    public static List<LogMessage> getSyntacticLog(){
+        return syntaticLog;
+    }
+    
+    private File codigo;
+
+    public Compilador(File codigo) throws FileNotFoundException {
+        this(new FileReader(codigo));
+        this.codigo = codigo;
+    }
+
+    public void imprimeLogs() {
+        imprimeAnalisisLexico();
+        imprimeAnalisisSintactico();
+        imprimeAnalisisSemantico();
+    }
+
+    private void imprimeAnalisisLexico() {
+        imprimeArchivo("res/analsis_lexico_" + codigo.getName() + ".txt",
+                Compilador.getLogAnalisisLexico().toString());
+    }
+
+    private void imprimeAnalisisSintactico() {
+        imprimeArchivo("res/analsis_sintactico_" + codigo.getName() + ".txt",
+                Compilador.getLogAnalisisSintactico().toString());
+    }
+
+    private void imprimeAnalisisSemantico() {
+        imprimeArchivo("res/analsis_semantico_" + codigo.getName() + ".txt",
+                Compilador.getLogAnalisisSemantico().toString());
+    }
+
+    private void imprimeArchivo(String nombreArchivo, String contenido) {
+        try {
+            FileUtilities.writeToFile(contenido, contenido);
+        } catch (FileNotFoundException ex) {
+            System.err.println("No se pudo encontrar el archivo");
         }
-        
-        void skipTo(int kind) {
-            Token tok = getToken(0);
-            while(tok.kind != EOF && tok.kind != kind){
-                 tok = getNextToken();
-                 System.out.println("Saltanto token: " + tok.image);
+    }
+
+    void skipTo(int kind) {
+        Token tok = getToken(0);
+        while (tok.kind != EOF && tok.kind != kind) {
+            tok = getNextToken();
+            System.out.println("Saltanto token: " + tok.image);
+        }
+    }
+
+    void skipTo(String st) {
+        Token tok = getToken(0);
+        System.out.println("Token saltado " + tok.image);
+        while (tok.kind != EOF && !tok.image.equals(st)) {
+            tok = getNextToken();
+        }
+    }
+
+    void skipTo(int[] left, int[] right) {
+        Token prev = getToken(0);
+        Token next = getToken(1);
+        boolean flag = false;
+        if (prev.kind == EOF || next.kind == EOF) {
+            flag = true;
+        }
+        for (int i = 0; i < left.length; i++) {
+            if (prev.kind == left[i]) {
+                flag = true;
+            }
+        }
+        for (int i = 0; i < right.length; i++) {
+            if (next.kind == right[i]) {
+                flag = true;
             }
         }
 
-        void skipTo(String st) {
-            Token tok = getToken(0);
-            System.out.println("Token saltado " + tok.image);
-            while(tok.kind != EOF && !tok.image.equals(st)) tok = getNextToken();
-        }
-
-        void skipTo(int[] left, int[] right) {
-            Token prev = getToken(0);
-            Token next = getToken(1);
-            boolean flag = false;
-            if(prev.kind == EOF || next.kind == EOF) flag = true;
-            for(int i=0; i<left.length; i++) if(prev.kind == left[i]) flag = true;
-            for(int i=0; i<right.length; i++) if(next.kind == right[i]) flag = true;
-
-            while(!flag) {
+        while (!flag) {
             System.err.println("Token saltado: " + prev);
-                getNextToken();
-                prev = getToken(0);
-                next = getToken(1);
-                if(prev.kind == EOF || next.kind == EOF) flag = true;
-                for(int i=0; i<left.length; i++) if(prev.kind == left[i]) flag = true;
-                for(int i=0; i<right.length; i++) if(next.kind == right[i]) flag = true;
+            getNextToken();
+            prev = getToken(0);
+            next = getToken(1);
+            if (prev.kind == EOF || next.kind == EOF) {
+                flag = true;
+            }
+            for (int i = 0; i < left.length; i++) {
+                if (prev.kind == left[i]) {
+                    flag = true;
+                }
+            }
+            for (int i = 0; i < right.length; i++) {
+                if (next.kind == right[i]) {
+                    flag = true;
+                }
             }
         }
+    }
 
-        public static StringBuilder getLogAnalisisLexico(){
-            return logAnalisisLexico;
-        }
-
-        public static StringBuilder getLogAnalisisSintactico(){
-            return logAnalisisSintactico;
-        }
-
-        public static StringBuilder getLogAnalisisSemantico(){
-            return logAnalisisSemantico;
-        }
-
-        public static void initLogs(){
-            logAnalisisLexico.setLength(0);
-            logAnalisisSintactico.setLength(0);
-            logAnalisisSemantico.setLength(0);
-        }
 }
 PARSER_END(Compilador)
 
@@ -156,96 +225,96 @@ PARSER_END(Compilador)
 //Tokens de operadores aritméticos
 TOKEN:{
     <OP_INCREMENTO:"++">{
-        Compilador.registraLogLexico("Token: Operador de incremento " + image);
+        Compilador.logLexicalInfoMessage("Operador de incremento encontrado".concat(image.toString()));
     }
     |<OP_DECREMENTO: "--">{
-        Compilador.registraLogLexico("Token: Operador de decremento " + image);
+        Compilador.logLexicalInfoMessage("Operador de decremento encontrado".concat(image.toString()));
     }
     |<OP_SUMA : "+">{
-        Compilador.registraLogLexico("Token: Operador de adición " + image);
+        Compilador.logLexicalInfoMessage("Operador de adición encontrado".concat(image.toString()));
     }
     |<OP_RESTA : "-">{
-        Compilador.registraLogLexico("Token: Operador de sustracción " + image);
+        Compilador.logLexicalInfoMessage("Operador de sustracción encontrado".concat(image.toString()));
     }
     |<OP_PRODUCTO : "*">{
-        Compilador.registraLogLexico("Token: Operador de producto " + image);
+        Compilador.logLexicalInfoMessage("Operador de producto encontrado".concat(image.toString()));
     }
     |<OP_DIVISION : "/">{
-        Compilador.registraLogLexico("Token: Operador de cociente " + image);
+        Compilador.logLexicalInfoMessage("Operador de cociente encontrado".concat(image.toString()));
     }
     |<COMPLEMENTO: "~" >{
-        Compilador.registraLogLexico("Token: Operador de complemento a 2 " + image);
+        Compilador.logLexicalInfoMessage("Operador de complemento a 2 encontrado".concat(image.toString()));
     }
 }
 
 //Tokens de operadores lógicos y de bits
 TOKEN : {
     <OP_AND : "&&">{
-        Compilador.registraLogLexico("Token: Operador AND lógico " + image);
+        Compilador.logLexicalInfoMessage("Operador AND lógico encontrado encontrado".concat(image.toString()));
     }
     |<OP_OR : "||">{
-        Compilador.registraLogLexico("Token: Operador OR lógico " + image);
+        Compilador.logLexicalInfoMessage("Operador OR lógico encontrado encontrado".concat(image.toString()));
     }
     |<OP_NOT : "!">{
-        Compilador.registraLogLexico("Token: Operador NOT lógico " + image);
+        Compilador.logLexicalInfoMessage("Operador NOT lógico encontrado encontrado".concat(image.toString()));
     }
     |<OP_OR_BIT : "|">{
-        Compilador.registraLogLexico("Token: Operador OR a nivel de bits " + image);
+        Compilador.logLexicalInfoMessage("Operador OR a nivel de bits encontrado".concat(image.toString()));
     }
     |<OP_AND_BIT : "&">{
-        Compilador.registraLogLexico("Token: Operador AND a nivel de bits " + image);
+        Compilador.logLexicalInfoMessage("Operador AND a nivel de bits encontrado".concat(image.toString()));
     }
     |<OP_XOR_BIT : "^">{
-        Compilador.registraLogLexico("Token: Operador XOR a nivel de bits " + image);
+        Compilador.logLexicalInfoMessage("Operador XOR a nivel de bits encontrado".concat(image.toString()));
     }
 }
 
 TOKEN : {
     <OP_ASIG : "=">{
-        Compilador.registraLogLexico("Token: Operador de asignación " + image);
+        Compilador.logLexicalInfoMessage("Operador de asignación encontrado".concat(image.toString()));
     }
     |<OP_ASIG_SUMA : "+=">{
-        Compilador.registraLogLexico("Token: Operador de asignacion con adición " + image);
+        Compilador.logLexicalInfoMessage("Operador de asignacion con adición encontrado".concat(image.toString()));
     }
     |<OP_ASIG_RESTA : "-=">{
-        Compilador.registraLogLexico("Token: Operador de asignacion con sustracción " + image);
+        Compilador.logLexicalInfoMessage("Operador de asignacion con sustracción encontrado".concat(image.toString()));
     }
     |<OP_ASIG_PRODUCTO : "*=">{
-        Compilador.registraLogLexico("Token: Operador de asignacion con producto " + image);
+        Compilador.logLexicalInfoMessage("Operador de asignacion con producto encontrado".concat(image.toString()));
     }
     |<OP_ASIG_COCIENTE : "/=">{
-        Compilador.registraLogLexico("Token: Operador de asignacion con cociente " + image);
+        Compilador.logLexicalInfoMessage("Operador de asignacion con cociente encontrado".concat(image.toString()));
     }
     |<OP_ASIG_MODULO : "%=">{
-        Compilador.registraLogLexico("Token: Operador de asignacion con modulo " + image);
+        Compilador.logLexicalInfoMessage("Operador de asignacion con modulo encontrado".concat(image.toString()));
     }
     |<OP_ASIG_SHIFT_LEFT : "<<=">{
-        Compilador.registraLogLexico("Token: Operador de asignacion con recorrimiento a la izquierda " + image);
+        Compilador.logLexicalInfoMessage("Operador de asignacion con recorrimiento a la izquierda encontrado".concat(image.toString()));
     }
     |<OP_ASIG_SHIFT_RIGTH : ">>=">{
-        Compilador.registraLogLexico("Token: Operador de asignacion con recorrimiento a la derecha " + image);
+        Compilador.logLexicalInfoMessage("Operador de asignacion con recorrimiento a la derecha encontrado".concat(image.toString()));
     }
     |<OP_ASIG_XOR : "^=">{
-        Compilador.registraLogLexico("Token: Operador de asignacion con operación XOR a nivel de bits " + image);
+        Compilador.logLexicalInfoMessage("Operador de asignacion con operación XOR a nivel de bits encontrado".concat(image.toString()));
     }
     |<OP_ASIG_OR : "|=">{
-        Compilador.registraLogLexico("Token: Operador de asignacion con operación OR a nivel de bits " + image);
+        Compilador.logLexicalInfoMessage("Operador de asignacion con operación OR a nivel de bits encontrado".concat(image.toString()));
     }
     |<OP_ASIG_AND : "&=">{
-        Compilador.registraLogLexico("Token: Operador de asignacion con operación AND a nivel de bits " + image);
+        Compilador.logLexicalInfoMessage("Operador de asignacion con operación AND a nivel de bits encontrado".concat(image.toString()));
     }
 }
 
 //Tokens para literales
 TOKEN : {
     <LITERAL_BOOLEANA : ("YES"|"NO"|"true"|"false")>{
-        Compilador.registraLogLexico("Token: Literal booleana: " + image);
+        Compilador.logLexicalInfoMessage("Literal booleana encontrada: ".concat(image.toString()));
     }
     |< LITERAL_ENTERA:
         <LITERAL_DECIMAL> (["l","L"])?
       | <LITERAL_HEX> (["l","L"])?
       | <LITERAL_OCTAL> (["l","L"])?>{
-        Compilador.registraLogLexico("Token: Literal entera: " + image);
+        Compilador.logLexicalInfoMessage("Literal entera encontrada: ".concat(image.toString()));
     }
     |
         < #LITERAL_DECIMAL: ["1"-"9"] (["0"-"9"])* >
@@ -260,7 +329,7 @@ TOKEN : {
         | (["0"-"9"])+ <EXPONENTE> (["f","F","d","D"])?
         | (["0"-"9"])+ (<EXPONENTE>)? ["f","F","d","D"]
         >{
-        Compilador.registraLogLexico("Token: Literal flotante : " + image);
+        Compilador.logLexicalInfoMessage("Literal flotante encontrada: ".concat(image.toString()));
     }
     |
         < #EXPONENTE: ["e","E"] (["+","-"])? (["0"-"9"])+ >
@@ -277,7 +346,7 @@ TOKEN : {
       )
       "'"
       >{
-        Compilador.registraLogLexico("Token: Literal caracter: " + image);
+        Compilador.logLexicalInfoMessage("Literal caracter encontrada: ".concat(image.toString()));
     }
     |
     < LITERAL_STRING:
@@ -292,133 +361,133 @@ TOKEN : {
       )*
       "\""
     >{
-        Compilador.registraLogLexico("Token: Literal string: " + image);
+        Compilador.logLexicalInfoMessage("Literal string de C encontrada: ".concat(image.toString()));
     }
     |<LITERAL_STRING_OBJC:
         "@"<LITERAL_STRING>
     >{
-        Compilador.registraLogLexico("Token: Literal string de objective c: " + image);
+        Compilador.logLexicalInfoMessage("Literal string de Objective-C encontrada: ".concat(image.toString()));
     }
 }
 
 //tokens para tipos de datos
 TOKEN : {
     <BYTE : "byte">{
-        Compilador.registraLogLexico("Token: Palabra reservada de tipo de dato primitivo " + image);
+        Compilador.logLexicalInfoMessage("Palabra reservada de tipo de dato primitivo ".concat(image.toString()).concat(" encontrada"));
     }
     |<SHORT : "short">{
-        Compilador.registraLogLexico("Token: Palabra reservada de tipo de dato primitivo " + image);
+        Compilador.logLexicalInfoMessage("Palabra reservada de tipo de dato primitivo ".concat(image.toString()).concat(" encontrada"));
     }
     |<ENTERO : "int">{
-        Compilador.registraLogLexico("Token: Palabra reservada de tipo de dato primitivo " + image);
+        Compilador.logLexicalInfoMessage("Palabra reservada de tipo de dato primitivo ".concat(image.toString()).concat(" encontrada"));
     }
     |<LONG : "long">{
-        Compilador.registraLogLexico("Token: Palabra reservada de tipo de dato primitivo " + image);
+        Compilador.logLexicalInfoMessage("Palabra reservada de tipo de dato primitivo ".concat(image.toString()).concat(" encontrada"));
     }
     |<DOUBLE : "double">{
-        Compilador.registraLogLexico("Token: Palabra reservada de tipo de dato primitivo " + image);
+        Compilador.logLexicalInfoMessage("Palabra reservada de tipo de dato primitivo ".concat(image.toString()).concat(" encontrada"));
     }
     |<FLOTANTE: "float">{
-        Compilador.registraLogLexico("Token: Palabra reservada de tipo de dato primitivo " + image);
+        Compilador.logLexicalInfoMessage("Palabra reservada de tipo de dato primitivo ".concat(image.toString()).concat(" encontrada"));
     }
     |<BOOLEANO : "BOOL">{
-        Compilador.registraLogLexico("Token: Palabra reservada de tipo de dato primitivo " + image);
+        Compilador.logLexicalInfoMessage("Palabra reservada de tipo de dato primitivo ".concat(image.toString()).concat(" encontrada"));
     }
     |<CARACTER : "char">{
-        Compilador.registraLogLexico("Token: Palabra reservada de tipo de dato primitivo " + image);
+        Compilador.logLexicalInfoMessage("Palabra reservada de tipo de dato primitivo ".concat(image.toString()).concat(" encontrada"));
     }
     |<NSSTRING: "NSString">{
-        Compilador.registraLogLexico("Token: Palabra reservada de tipo de dato primitivo " + image);
+        Compilador.logLexicalInfoMessage("Palabra reservada de tipo de dato primitivo ".concat(image.toString()).concat(" encontrada"));
     }
     |<ARREGLO: "NSArray">{
-        Compilador.registraLogLexico("Token: Palabra reservada de tipo de dato primitivo " + image);
+        Compilador.logLexicalInfoMessage("Palabra reservada de tipo de dato primitivo ".concat(image.toString()).concat(" encontrada"));
     }
 }
 
 //tokens para palabras reservadas (sentencias de control)
 TOKEN : {
     <VOID : "void">{
-        Compilador.registraLogLexico("Token: Palabra reservada " + image);
+        Compilador.logLexicalInfoMessage("Palabra reservada ".concat(image.toString()).concat(" encontrada"));
     }
     |<CONST : "const">{
-        Compilador.registraLogLexico("Token: Palabra reservada " + image);
+        Compilador.logLexicalInfoMessage("Palabra reservada ".concat(image.toString()).concat(" encontrada"));
     }
     |<FOR : "for">{
-        Compilador.registraLogLexico("Token: Palabra reservada " + image);
+        Compilador.logLexicalInfoMessage("Palabra reservada ".concat(image.toString()).concat(" encontrada"));
     }
     |<WHILE : "while">{
-        Compilador.registraLogLexico("Token: Palabra reservada " + image);
+        Compilador.logLexicalInfoMessage("Palabra reservada ".concat(image.toString()).concat(" encontrada"));
     }
     |<DO : "do">{
-        Compilador.registraLogLexico("Token: Palabra reservada " + image);
+        Compilador.logLexicalInfoMessage("Palabra reservada ".concat(image.toString()).concat(" encontrada"));
     }
     |<BREAK : "break">{
-        Compilador.registraLogLexico("Token: Palabra reservada " + image);
+        Compilador.logLexicalInfoMessage("Palabra reservada ".concat(image.toString()).concat(" encontrada"));
     }
     |<CONTINUE : "continue">{
-        Compilador.registraLogLexico("Token: Palabra reservada " + image);
+        Compilador.logLexicalInfoMessage("Palabra reservada ".concat(image.toString()).concat(" encontrada"));
     }
     |<RETURN : "return">{
-        Compilador.registraLogLexico("Token: Palabra reservada " + image);
+        Compilador.logLexicalInfoMessage("Palabra reservada ".concat(image.toString()).concat(" encontrada"));
     }
     |<IF : "if">{
-        Compilador.registraLogLexico("Token: Palabra reservada " + image);
+        Compilador.logLexicalInfoMessage("Palabra reservada ".concat(image.toString()).concat(" encontrada"));
     }
     |<ELSE : "else">{
-        Compilador.registraLogLexico("Token: Palabra reservada " + image);
+        Compilador.logLexicalInfoMessage("Palabra reservada ".concat(image.toString()).concat(" encontrada"));
     }
     |<SWITCH : "switch">{
-        Compilador.registraLogLexico("Token: Palabra reservada " + image);
+        Compilador.logLexicalInfoMessage("Palabra reservada ".concat(image.toString()).concat(" encontrada"));
     }
     |<CASE : "case">{
-        Compilador.registraLogLexico("Token: Palabra reservada " + image);
+        Compilador.logLexicalInfoMessage("Palabra reservada ".concat(image.toString()).concat(" encontrada"));
     }
     |<PR_DEFAULT : "default">{
-        Compilador.registraLogLexico("Token: Palabra reservada " + image);
+        Compilador.logLexicalInfoMessage("Palabra reservada ".concat(image.toString()).concat(" encontrada"));
     }
 }
 
 //tokens varios
 TOKEN : {
     <IMPORTACION: "#import">{
-        Compilador.registraLogLexico("Token: Directiva de importación " + image);
+        Compilador.logLexicalInfoMessage("Directiva de importación ".concat(image.toString()).concat(" encontrada"));
     }
     |<DELIMITADOR_INSTRUCCION : ";">{
-        Compilador.registraLogLexico("Token: Delimitador de instrucción " + image);
+        Compilador.logLexicalInfoMessage("Símbolo ".concat(image.toString()).concat(" encontrado"));
     }
     |<DOS_PUNTOS : ":">{
-        Compilador.registraLogLexico("Token: Dos puntos " + image);
+        Compilador.logLexicalInfoMessage("Símbolo ".concat(image.toString()).concat(" encontrado"));
     }
     |<COMA : ",">{
-        Compilador.registraLogLexico("Token: Coma " + image);
+        Compilador.logLexicalInfoMessage("Símbolo ".concat(image.toString()).concat(" encontrado"));
     }
     |<PARENTESIS_APERTURA : "(">{
-        Compilador.registraLogLexico("Token: Parentesís de apertura " + image);
+        Compilador.logLexicalInfoMessage("Símbolo ".concat(image.toString()).concat(" encontrado"));
     }
     |<PARENTESIS_CERRADURA : ")">{
-        Compilador.registraLogLexico("Token: Parentesís de cerradura " + image);
+        Compilador.logLexicalInfoMessage("Símbolo ".concat(image.toString()).concat(" encontrado"));
     }
     |<LLAVE_APERTURA : "{">{
-        Compilador.registraLogLexico("Token: Llave de apertura " + image);
+        Compilador.logLexicalInfoMessage("Símbolo ".concat(image.toString()).concat(" encontrado"));
     }
     |<LLAVE_CERRADURA : "}">{
-        Compilador.registraLogLexico("Token: Llave de cerradura " + image);
+        Compilador.logLexicalInfoMessage("Símbolo ".concat(image.toString()).concat(" encontrado"));
     }
     |<CORCHETE_APERTURA : "[">{
-        Compilador.registraLogLexico("Token: Corchete de apertura " + image);
+        Compilador.logLexicalInfoMessage("Símbolo ".concat(image.toString()).concat(" encontrado"));
     }
     |<CORCHETE_CERRADURA : "]">{
-        Compilador.registraLogLexico("Token: Corchete de cerradura " + image);
+        Compilador.logLexicalInfoMessage("Símbolo ".concat(image.toString()).concat(" encontrado"));
     }
     |<COMILLA_DOBLE : "\"">{
-        Compilador.registraLogLexico("Token: Comilla doble " + image);
+        Compilador.logLexicalInfoMessage("Símbolo ".concat(image.toString()).concat(" encontrado"));
     }
 }
 
 TOKEN : /* IDENTIFIERS */
 {
   < ID: <LETRA> (<LETRA>|<DIGITO>)* >{
-        Compilador.registraLogLexico("Token: Identificador " + image);
+        Compilador.logLexicalInfoMessage("Identificador ".concat(" encontrado"));
     }
 |
   < #LETRA:
@@ -457,7 +526,8 @@ TOKEN : /* IDENTIFIERS */
        "\u0ed0"-"\u0ed9",
        "\u1040"-"\u1049"
       ]
-  >
+>
+    //|<PUNTERO: "*"<ID>>
 }
 
 //Skips
@@ -489,6 +559,7 @@ void unidadCompilacion():{}{
     )*
     <EOF>
     {imprimeLogs();}
+    {logSystacticMessage("Análisis sintáctico terminado con ".concat(contadorErrores + "").concat(" errores."));}
 }
 
 void importacion(): {
@@ -500,9 +571,8 @@ void importacion(): {
 }{
     try{
         "#import" ( "\"" <ID> "\"" | "<" <ID> ">")
-{
-    System.out.println("G: Gramática de directiva de importación");
-}
+    {logSystacticInfoMessage("Drase de 'Directiva de importación' halláda.");}
+
     }catch(ParseException ex){
         registraErrorSintactico(
             "Error de sintaxis en directiva de importación ", ex.currentToken.next);
@@ -540,6 +610,7 @@ try{
     )* 
 try{
     ";"
+    {logSystacticInfoMessage("Frasé de 'Declaración de variable global' halláda.");}
 }catch(ParseException ex){
     registraErrorSintactico(
             "Error de sintaxis en declaración de variable global ", ex.currentToken.next);
@@ -563,9 +634,7 @@ void declMetodo():{
 }{
 try{
     tipoResultado() <ID> parametros() ( bloque() | ";" )
-{
-    System.out.println("Gramática de declaración método");
-}
+    {logSystacticInfoMessage("Frase de 'Declaración de método' halláda.");}
 }catch(ParseException ex){
     System.out.println(ex);
     registraErrorSintactico(
@@ -595,6 +664,7 @@ try{
             "Error de sintaxis en declaración de método ", ex.currentToken.next);
     skipTo(tokensIzquierda, tokensDerecha);
 }
+    {logSystacticInfoMessage("Frase de 'Declaración de parámetros de método' halláda.");}
 }
 
 /*  Gramática
@@ -635,6 +705,7 @@ void tipoResultado():{}{
 *   EXPRESION   →   ASIGNACION | EXP_CONDICIONAL        */
 void expresion():{}{
     LOOKAHEAD(expPrimaria() operadorAsignacion()) asignacion() | expCondicional()
+    {logSystacticInfoMessage("Frase de 'Expresión' halláda.");}
 }
 
 /*  Gramática
@@ -745,10 +816,12 @@ void llamadoFuncion():{
     System.out.println("Gramática de llamado de función");
 }{
     <ID> argumentos()
+    {logSystacticInfoMessage("Frase de 'Llamado a función' halláda.");}
 }
 
 void argumentos():{}{
     "(" [expresion() ( "," expresion() )* ] ")"
+    {logSystacticInfoMessage("Frase de 'Argumentos de llamado de función' halláda.");}
 }
 
 void sentencia():{}{
@@ -786,6 +859,7 @@ try{
     (bloqueSent())*
 try{
     "}" 
+    {logSystacticInfoMessage("Frase de 'Definición de bloque de código' halláda.");}
 }catch(ParseException ex){
     registraErrorSintactico(
             "Error de sintaxis en bloque de sentencias ", ex.currentToken.next);
@@ -804,9 +878,7 @@ void sentVacia():{}{
     ";"
 }
 
-void sentExp():{
-    System.out.println("Gramática de sentencia de expresión");
-}{   
+void sentExp():{}{   
     expPreInc()
     | expPreDec() 
     | LOOKAHEAD(<ID> operadorAsignacion()) asignacion() 
@@ -836,6 +908,7 @@ try{
     ( LOOKAHEAD(":" | "case" | "default" | literal() ":") etiquetaSwitch() ( bloqueSent() )* )*
 try{
     "}"
+    {logSystacticInfoMessage("Frase de 'Sentencía switch-case' halláda.");}
 }catch(ParseException ex){
     registraErrorSintactico(
             "Error de sintaxis en sentencia switch ", ex.currentToken.next);
@@ -856,6 +929,7 @@ void etiquetaSwitch():{
 }{   
 try{
     "case"expresion() ":"  | "default" ":"
+    {logSystacticInfoMessage("Frase de 'Etiqueta case' halláda.");}
 }catch(ParseException ex){
     registraErrorSintactico(
             "Error de sintaxis en etiqueta de switch ", ex.currentToken.next);
@@ -884,7 +958,7 @@ void  sentIf():{
     if(!mensajeError.isEmpty()){
         registraErrorSintactico(
             "Error de sintaxis en sentencia if\n" + mensajeError, getToken(0));
-    }
+    }else{logSystacticInfoMessage("Frase de 'Sentencia if-else' halláda.");}
 }
 }
 
@@ -908,7 +982,7 @@ void sentWhile():{
     if(!mensajeError.isEmpty()){
         registraErrorSintactico(
             "Error de sintaxis en sentencia while\n" + mensajeError, getToken(0));
-    }
+    }else{logSystacticInfoMessage("Frase de 'Sentencia while' halláda.");}
 }
 }
 
@@ -934,7 +1008,7 @@ void sentDo():{
     if(!mensajeError.isEmpty()){
         registraErrorSintactico(
             "Error de sintaxis en sentencia do - while\n" + mensajeError, getToken(0));
-    }
+    }else{logSystacticInfoMessage("Frase de 'Sentencia do-while' halláda.");}
 }
 }
 
@@ -959,7 +1033,7 @@ void sentFor():{
     if(!mensajeError.isEmpty()){
         registraErrorSintactico(
             "Error de sintaxis en sentencia for\n" + mensajeError, getToken(0));
-    }
+    }else{logSystacticInfoMessage("Frase de 'Sentencia for' halláda.");}
 }
 }
 

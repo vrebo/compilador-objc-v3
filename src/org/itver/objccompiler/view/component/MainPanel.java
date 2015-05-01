@@ -12,8 +12,8 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import org.itver.component.CodeEditor;
-import org.itver.component.OutputPane;
+import org.itver.componentlibrary.component.CodeEditor;
+import org.itver.componentlibrary.component.OutputPane2;
 import org.itver.objccompiler.controller.Controller;
 
 /**
@@ -25,14 +25,14 @@ public class MainPanel extends JPanel {
     private JButton jbCompilar;
     private JButton jbLimpiarArea;
     private CodeEditor codeEditor;
-    private final OutputPane outputAnalisisLexico;
-    private final OutputPane outputAnalisisSintactico;
-    private final OutputPane outputAnalisisSemantico;
+    private final OutputPane2 outputAnalisisLexico;
+    private final OutputPane2 outputAnalisisSintactico;
+    private final OutputPane2 outputAnalisisSemantico;
 
     public MainPanel() {
-        outputAnalisisLexico        = new OutputPane("Análisis Léxico");
-        outputAnalisisSintactico    = new OutputPane("Análisis Sintáctico");
-        outputAnalisisSemantico     = new OutputPane("Análisis Semántico");
+        outputAnalisisLexico        = new OutputPane2("Análisis Léxico");
+        outputAnalisisSintactico    = new OutputPane2("Análisis Sintáctico");
+        outputAnalisisSemantico     = new OutputPane2("Análisis Semántico");
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createLineBorder(getBackground(), 5));
         initComponents();
@@ -51,7 +51,7 @@ public class MainPanel extends JPanel {
         jbLimpiarArea = new JButton("Limpiar Area");
 
         //Creación de area de código
-        Font fuente = new Font("Droid Sans", Font.ITALIC, 15);
+        Font fuente = new Font("Droid Sans", Font.PLAIN, 15);
         codeEditor = new CodeEditor();
         codeEditor.setSize(200, 200);
         codeEditor.setFont(fuente);
@@ -76,8 +76,8 @@ public class MainPanel extends JPanel {
         JPanel panelSur = new JPanel();
         panelSur.setLayout(new BorderLayout());
         panelSur.setBorder(BorderFactory.createLineBorder(getBackground(), 5));
-        panelSur.add(outputAnalisisSintactico, BorderLayout.EAST);
-        panelSur.add(outputAnalisisSemantico, BorderLayout.CENTER);
+        panelSur.add(outputAnalisisSemantico, BorderLayout.EAST);
+        panelSur.add(outputAnalisisSintactico, BorderLayout.CENTER);
         add(panelCentro, BorderLayout.CENTER);
         add(outputAnalisisLexico, BorderLayout.EAST);
         add(panelSur, BorderLayout.SOUTH);
@@ -87,15 +87,15 @@ public class MainPanel extends JPanel {
         jbCompilar.setEnabled(estado);
     }
 
-    public OutputPane getOutputAnalisisLexico() {
+    public OutputPane2 getOutputAnalisisLexico() {
         return outputAnalisisLexico;
     }
 
-    public OutputPane getOutputAnalisisSintactico() {
+    public OutputPane2 getOutputAnalisisSintactico() {
         return outputAnalisisSintactico;
     }
 
-    public OutputPane getOutputAnalisisSemantico() {
+    public OutputPane2 getOutputAnalisisSemantico() {
         return outputAnalisisSemantico;
     }
 

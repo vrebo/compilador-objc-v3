@@ -13,8 +13,9 @@ import org.itver.objccompiler.model.compiler.AnalizadorSemantico;
 import org.itver.objccompiler.model.compiler.Compilador;
 import org.itver.objccompiler.model.compiler.ParseException;
 import org.itver.objccompiler.view.component.MainPanel;
-import org.itver.util.FileUtilities;
 import org.itver.util.Notification;
+import org.itver.util.FileUtilities;
+
 
 /**
  *
@@ -139,13 +140,17 @@ public class Controller extends KeyAdapter implements ActionListener {
             AnalizadorSemantico analizadorSemantico = new AnalizadorSemantico(panel.getCodeEditor().getCode());
             analizadorSemantico.ejecutarAnalisisSemantico();
 
-            String analisisLexico = Compilador.getLogAnalisisLexico().toString();
-            String analisisSintactico = Compilador.getLogAnalisisSintactico().toString();
-            String analisisSemantico = analizadorSemantico.getLogAnalisisSemantico().toString();
+//            String analisisLexico = Compilador.getLogAnalisisLexico().toString();
+//            String analisisSintactico = Compilador.getLogAnalisisSintactico().toString();
+//            String analisisSemantico = analizadorSemantico.getLogAnalisisSemantico().toString();
 
-            panel.getOutputAnalisisLexico().appendInfoMessage(analisisLexico);
-            panel.getOutputAnalisisSintactico().appendInfoMessage(analisisSintactico);
-            panel.getOutputAnalisisSemantico().appendInfoMessage(analisisSemantico);
+//            panel.getOutputAnalisisLexico().appendInfoMessage(analisisLexico);
+//            panel.getOutputAnalisisSintactico().appendInfoMessage(analisisSintactico);
+//            panel.getOutputAnalisisSemantico().appendInfoMessage(analisisSemantico);
+            
+            panel.getOutputAnalisisLexico().appendMessages(Compilador.getLexicalLog());
+            panel.getOutputAnalisisSintactico().appendMessages(Compilador.getSyntacticLog());
+            panel.getOutputAnalisisSemantico().appendMessages(analizadorSemantico.getSemanticLog());
 
         } catch (FileNotFoundException | ParseException ex) {
             Notification.error(panel,
